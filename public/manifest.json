@@ -1,0 +1,16 @@
+{
+  "name": "Loggit",
+  "short_name": "Loggit",
+  "icons": [
+    {
+      "src": "/images/logomark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#222222",
+  "background_color": "#efefef",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait"
+}
