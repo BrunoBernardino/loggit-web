@@ -58,7 +58,7 @@ const Event = (props: EventProps) => {
           {props.name}
         </Name>
       </LeftColumn>
-      {props.showDate ? <Date>{eventDate.format('DD MMM')}</Date> : null}
+      {props.showDate ? <Date>{eventDate.format('D MMM')}</Date> : null}
     </Container>
   );
 };

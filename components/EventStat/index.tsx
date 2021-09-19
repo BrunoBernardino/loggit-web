@@ -52,12 +52,16 @@ const Date = styled.div`
 `;
 
 const EventStat = (props: EventStatProps) => {
+  let displayFormat = 'D MMM';
   const eventDate = moment(props.lastDate, 'YYYY-MM-DD');
+  if (eventDate.year() !== moment().year()) {
+    displayFormat = "D MMM 'YY";
+  }
   return (
     <Container>
       <Name>{props.name}</Name>
       <Frequency>{props.frequency}</Frequency>
-      <Date>{eventDate.format('DD MMM')}</Date>
+      <Date>{eventDate.format(displayFormat)}</Date>
     </Container>
   );
 };
