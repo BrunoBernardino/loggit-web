@@ -108,7 +108,7 @@ const All = () => {
       </LeftSide>
       <AddEvent allEvents={allEvents} reloadData={reloadData} db={db.current} />
       <Settings syncToken={syncToken} db={db.current} />
-      <LogoutLink />
+      <LogoutLink db={db.current} />
     </Wrapper>
   );
 };

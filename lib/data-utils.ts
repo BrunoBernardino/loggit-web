@@ -252,7 +252,7 @@ export const deleteEvent = async (db: RxDatabase, eventId: string) => {
 export const deleteAllData = async (db: RxDatabase, syncToken: string) => {
   await db.events.remove();
 
-  // NOTE: The erase below doesn't work locally, so we need the two lines above
+  // NOTE: The erase below doesn't work locally, so we need the line above
   const localDb = new PouchDB(localDbName);
   // @ts-ignore erase comes from pouchdb-erase
   await localDb.erase();
@@ -260,6 +260,15 @@ export const deleteAllData = async (db: RxDatabase, syncToken: string) => {
   const remoteDb = new PouchDB(syncToken);
   // @ts-ignore erase comes from pouchdb-erase
   await remoteDb.erase();
+};
+
+export const deleteLocalData = async (db: RxDatabase) => {
+  await db.events.remove();
+
+  // NOTE: The erase below doesn't work locally, so we need the line above
+  const localDb = new PouchDB(localDbName);
+  // @ts-ignore erase comes from pouchdb-erase
+  await localDb.erase();
 };
 
 type ExportAllData = (
