@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Rodal from 'rodal';
 import { RxDatabase } from 'rxdb';
 
+import SegmentedControl from 'components/SegmentedControl';
 import Button from 'components/Button';
 import IconButton from 'components/IconButton';
 import ImportExportModal from 'components/ImportExportModal';
 import { colors, fontSizes } from 'lib/constants';
+import { doLogin, showNotification } from 'lib/utils';
+import * as T from 'lib/types';
 
 import appPackage from '../../package.json';
 
 interface SettingsProps {
+  currentTheme: T.Theme;
+  updateTheme: (theme: T.Theme) => void;
   syncToken: string;
   db: RxDatabase;
 }
@@ -41,6 +46,11 @@ const Label = styled.span`
   margin-top: 38px;
 `;
 
+const StyledSegmentedControl = styled(SegmentedControl)`
+  margin: 15px auto 10px;
+  width: 96%;
+`;
+
 const BottomContainer = styled.section`
   display: flex;
   flex: 0.5;
@@ -65,9 +75,47 @@ const HelpButton = styled(Button)`
   align-self: center;
 `;
 
-const Settings = ({ syncToken, db }: SettingsProps) => {
+const themeLabels = ['Light', 'Dark'];
+const themeValues: T.Theme[] = ['light', 'dark'];
+
+const Settings = ({
+  currentTheme,
+  updateTheme,
+  syncToken,
+  db,
+}: SettingsProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isImportExportModalOpen, setIsImportExportModalOpen] = useState(false);
+  const [theme, setTheme] = useState(currentTheme);
+
+  useEffect(() => {
+    setTheme(currentTheme);
+  }, [currentTheme]);
+
+  const saveTheme = async (newTheme: T.Theme) => {
+    if (isSubmitting) {
+      // Ignore sequential taps
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const success = doLogin(syncToken, newTheme);
+
+    if (success) {
+      updateTheme(newTheme);
+      return;
+    }
+
+    if (success) {
+      showNotification('Settings saved successfully.');
+    }
+  };
+
+  const selectedThemeIndex = themeValues.findIndex(
+    (_theme) => theme === _theme,
+  );
 
   return (
     <>
@@ -83,7 +131,15 @@ const Settings = ({ syncToken, db }: SettingsProps) => {
         animation="slideDown"
       >
         <Container>
-          <Label>Settings</Label>
+          <Label>Theme</Label>
+          <StyledSegmentedControl
+            values={themeLabels}
+            selectedIndex={selectedThemeIndex === -1 ? 0 : selectedThemeIndex}
+            onChange={(selectedSegmentIndex: number) => {
+              setTheme(themeValues[selectedSegmentIndex]);
+              saveTheme(themeValues[selectedSegmentIndex]);
+            }}
+          />
           <BottomContainer>
             <Version>
               v{appVersion}-{appBuild}

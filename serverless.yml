@@ -2,7 +2,7 @@ service:
   name: loggit-web
 
 myNextAppplication:
-  component: "@sls-next/serverless-component@1.19.0"
+  component: "@sls-next/serverless-component@3.6.0"
   inputs:
     domain: ["app", "loggit.net"]
     bucketName: loggit-web

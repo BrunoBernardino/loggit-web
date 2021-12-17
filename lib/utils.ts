@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2';
 
 import { sessionNamespace } from 'lib/constants';
-import { AuthToken } from 'lib/types';
+import { AuthToken, Theme } from 'lib/types';
 
 type SortableByDate = { date: string };
 export const sortByDate = (
@@ -65,9 +65,10 @@ export const showNotification = (
   });
 };
 
-export const doLogin = (syncToken: string) => {
+export const doLogin = (syncToken: string, theme: Theme = 'light') => {
   const authToken: AuthToken = {
     syncToken,
+    theme,
   };
 
   try {
@@ -118,6 +119,7 @@ export const getUserInfo: GetUserInfo = () => {
 
   return {
     syncToken: null,
+    theme: 'light',
   };
 };
 

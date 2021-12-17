@@ -4,8 +4,11 @@ export interface PlainObject {
   [key: string]: any;
 }
 
+export type Theme = 'dark' | 'light';
+
 export interface AuthToken {
   syncToken: string;
+  theme?: Theme;
 }
 
 export type Event = {
