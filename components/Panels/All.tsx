@@ -1,13 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import { useAsync } from 'react-use';
-import { RxDatabase } from 'rxdb';
 
 import LogoutLink from 'modules/auth/LogoutLink';
 import { Loading } from 'components';
 import { getUserInfo, showNotification } from 'lib/utils';
-import { initializeDb, fetchEvents, fetchAllEvents } from 'lib/data-utils';
+import { initializeDb, fetchEvents } from 'lib/data-utils';
 import * as T from 'lib/types';
 
 import Navigation from './Navigation';
@@ -21,7 +20,12 @@ const Wrapper = styled.main`
   flex: 1;
   justify-content: center;
   align-items: flex-start;
-  flex-direction: row;
+  flex-direction: column-reverse;
+  max-width: 100vw;
+  
+  @media only screen and (min-width: 800px) {
+    flex-direction: row;
+  }
 `;
 
 const LeftSide = styled.section`
@@ -35,11 +39,9 @@ const LeftSide = styled.section`
 const All = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [monthInView, setMonthInView] = useState(moment().format('YYYY-MM'));
-  const [syncToken, setSyncToken] = useState('');
   const [theme, setTheme] = useState<T.Theme>('light');
   const [events, setEvents] = useState<T.Event[]>([]);
   const [allEvents, setAllEvents] = useState<T.Event[]>([]);
-  const db = useRef<RxDatabase>(null);
 
   type ReloadData = (options?: {
     monthToLoad?: string;
@@ -49,12 +51,11 @@ const All = () => {
     setIsLoading(true);
 
     const fetchedEvents = await fetchEvents(
-      db.current,
       monthToLoad || monthInView,
     );
     setEvents(fetchedEvents);
 
-    const fetchedAllEvents = await fetchAllEvents(db.current);
+    const fetchedAllEvents = await fetchEvents();
     setAllEvents(fetchedAllEvents);
 
     setIsLoading(false);
@@ -77,16 +78,10 @@ const All = () => {
     if (typeof window !== 'undefined') {
       const userInfo = getUserInfo();
       setTheme(userInfo.theme || 'light');
-      setSyncToken(userInfo.syncToken);
 
-      const initializedDb = await initializeDb(userInfo.syncToken);
-      db.current = initializedDb;
+      await initializeDb();
 
       await reloadData();
-
-      showNotification(
-        'Data is continuously synchronizing in the background. Navigate between months to see the latest data.',
-      );
     }
   }, []);
 
@@ -111,18 +106,17 @@ const All = () => {
             monthInView={monthInView}
             events={events}
             reloadData={reloadData}
-            db={db.current}
           />
         </Wrapper>
       </LeftSide>
-      <AddEvent allEvents={allEvents} reloadData={reloadData} db={db.current} />
+      <AddEvent allEvents={allEvents} reloadData={reloadData} />
       <Settings
-        syncToken={syncToken}
-        db={db.current}
         currentTheme={theme}
         updateTheme={setTheme}
+        setIsLoading={setIsLoading}
+        reloadData={reloadData}
       />
-      <LogoutLink db={db.current} />
+      <LogoutLink />
     </Wrapper>
   );
 };

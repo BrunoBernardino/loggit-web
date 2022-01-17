@@ -80,10 +80,16 @@ const Container = styled.section`
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin: 0 10px;
+  margin: 20px 10px;
   max-height: 80vh;
   overflow: auto;
   ${safariFix}
+  width: 90vw;
+  
+  @media only screen and (min-width: 800px) {
+    width: auto;
+    margin: 0;
+  }
 `;
 
 const NoEventsFoundText = styled.p`

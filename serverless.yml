@@ -1,12 +1,11 @@
 service:
-  name: loggit-web
+  name: loggit-web-v2
+
+useDotEnv: true
 
 myNextAppplication:
   component: "@sls-next/serverless-component@3.6.0"
   inputs:
     domain: ["app", "loggit.net"]
-    bucketName: loggit-web
+    bucketName: loggit-web-v2
     bucketRegion: us-east-1
-    build:
-      env:
-        NODE_PATH: "/"

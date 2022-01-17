@@ -2,7 +2,7 @@
 
 exports[`Button renders the button as expected 1`] = `
 <button
-  className="Button__StyledButton-kxixwi-0  Button Button--primary "
+  className="Button__StyledButton-sc-kxixwi-0 undefined Button Button--primary "
   disabled={false}
   type="button"
 >

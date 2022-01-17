@@ -1,11 +1,11 @@
 import { getUserInfo } from 'lib/utils';
 
 export const defaultTitle = 'Loggit — Log your unscheduled events';
-export const defaultDescription = 'Simple and easy event management.';
+export const defaultDescription = 'Simple and encrypted event management.';
 export const defaultKeywords =
-  'loggit, simple, easy, events, ios, android, mobile';
+  'loggit, encrypted, e2ee, end-to-end, simple, easy, events, app, web, linux, ios, android, mobile, macos, windows';
 
-export const sessionNamespace = 'Loggit_appSession';
+export const sessionNamespace = 'Loggit_v2_appSession';
 
 type Theme = 'dark' | 'light';
 
@@ -23,6 +23,7 @@ export const colors = (theme: Theme = 'light') => {
 
   if (
     typeof document !== 'undefined' &&
+    typeof document.getElementsByTagName === 'function' &&
     document.getElementsByTagName('body')[0].classList.contains('theme-dark')
   ) {
     theme = 'dark';

@@ -1,148 +1,115 @@
-import {
-  addRxPlugin,
-  createRxDatabase,
-  PouchDB,
-  RxJsonSchema,
-  RxDocument,
-  RxDatabase,
-} from 'rxdb';
+import userbase from 'userbase-js';
 import Swal from 'sweetalert2';
 import moment from 'moment';
-
-// NOTE: These below are only required for production. Vercel is cleaning them up
-// import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
-import { RxDBValidatePlugin } from 'rxdb/plugins/validate';
-import { RxDBKeyCompressionPlugin } from 'rxdb/plugins/key-compression';
-import { RxDBMigrationPlugin } from 'rxdb/plugins/migration';
-import { RxDBLeaderElectionPlugin } from 'rxdb/plugins/leader-election';
-import { RxDBEncryptionPlugin } from 'rxdb/plugins/encryption';
-import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
-import { RxDBWatchForChangesPlugin } from 'rxdb/plugins/watch-for-changes';
-import { RxDBReplicationPlugin } from 'rxdb/plugins/replication';
-import { RxDBAdapterCheckPlugin } from 'rxdb/plugins/adapter-check';
-import { RxDBJsonDumpPlugin } from 'rxdb/plugins/json-dump';
-import { RxDBInMemoryPlugin } from 'rxdb/plugins/in-memory';
-import { RxDBAttachmentsPlugin } from 'rxdb/plugins/attachments';
-import { RxDBLocalDocumentsPlugin } from 'rxdb/plugins/local-documents';
-import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 
 import { sortByDate, showNotification, splitArrayInChunks } from './utils';
 import * as T from './types';
 
-const localDbName = './Loggit__data__v0';
+const USERBASE_APP_ID = process.env.NEXT_PUBLIC_USERBASE_APP_ID;
 
-// NOTE: These below are only required for production. Vercel is cleaning them up
-// addRxPlugin(RxDBDevModePlugin);
-addRxPlugin(RxDBValidatePlugin);
-addRxPlugin(RxDBKeyCompressionPlugin);
-addRxPlugin(RxDBMigrationPlugin);
-addRxPlugin(RxDBLeaderElectionPlugin);
-addRxPlugin(RxDBEncryptionPlugin);
-addRxPlugin(RxDBUpdatePlugin);
-addRxPlugin(RxDBWatchForChangesPlugin);
-addRxPlugin(RxDBReplicationPlugin);
-addRxPlugin(RxDBAdapterCheckPlugin);
-addRxPlugin(RxDBJsonDumpPlugin);
-addRxPlugin(RxDBInMemoryPlugin);
-addRxPlugin(RxDBAttachmentsPlugin);
-addRxPlugin(RxDBLocalDocumentsPlugin);
-addRxPlugin(RxDBQueryBuilderPlugin);
-
-addRxPlugin(require('pouchdb-adapter-idb'));
-addRxPlugin(require('pouchdb-adapter-http'));
-PouchDB.plugin(require('pouchdb-erase'));
-
-type EventDocument = RxDocument<T.Event>;
-const eventSchema: RxJsonSchema<T.Event> = {
-  title: 'event schema',
-  description: 'describes an event',
-  version: 0,
-  keyCompression: true,
-  type: 'object',
-  properties: {
-    id: {
-      type: 'string',
-      primary: true,
-    },
-    name: {
-      type: 'string',
-    },
-    date: {
-      type: 'string',
-    },
-  },
-  required: ['name', 'date'],
+const cachedData: { events: T.Event[] } = {
+  events: [],
 };
 
-const _hasFinishedFirstSync = {
+const hasFinishedLoading = {
   events: false,
 };
 
-export const initializeDb = async (syncToken: string) => {
-  if (!syncToken) {
-    return null;
+const sessionLengthInHours = 90 * 24;
+
+export const validateLogin = async (email: string, password: string) => {
+  try {
+    await userbase.signIn({
+      username: email,
+      password,
+      sessionLength: sessionLengthInHours,
+      rememberMe: 'local',
+    });
+    return { success: true };
+  } catch (error) {
+    console.log(error);
+    return { success: false, error };
   }
-
-  const db = await createRxDatabase({
-    name: localDbName,
-    adapter: 'idb',
-  });
-
-  await db.addCollections({
-    events: {
-      schema: eventSchema,
-    },
-  });
-
-  const syncOptions = {
-    remote: syncToken,
-    options: {
-      live: true,
-      retry: true,
-    },
-  };
-
-  const eventsSync = db.events.sync(syncOptions);
-
-  eventsSync.complete$.subscribe((completed) => {
-    console.log('eventsSync.complete$', completed);
-    _hasFinishedFirstSync.events = true;
-  });
-
-  eventsSync.change$.subscribe((docData) => {
-    console.log('eventsSync.change$', docData);
-  });
-
-  // eventsSync.docs$.subscribe((docs) => {
-  //   console.log('eventsSync.docs$', docs);
-  // });
-
-  // eventsSync.active$.subscribe((active) => {
-  //   console.log('eventsSync.active$', active);
-  // });
-
-  eventsSync.error$.subscribe((error) => {
-    console.log('eventsSync.error$', error);
-  });
-
-  eventsSync.denied$.subscribe((error) => {
-    console.log('eventsSync.denied$', error);
-  });
-
-  return db;
 };
 
-export const fetchEvents = async (db: RxDatabase, month: string) => {
+export const createAccount = async (email: string, password: string) => {
   try {
-    const events: EventDocument[] = await db.events
-      .find()
-      .where('date')
-      .gte(`${month}-01`)
-      .lte(`${month}-31`)
-      .exec();
+    await userbase.signUp({
+      username: email,
+      password,
+      sessionLength: sessionLengthInHours,
+      rememberMe: 'local',
+      email,
+    });
+    return { success: true };
+  } catch (error) {
+    console.log(error);
+    return { success: false, error };
+  }
+};
 
-    const sortedEvents = events
-      .map((event) => event.toJSON())
+const getEventFromItem = (item: userbase.Item) => {
+  try {
+    return {
+      id: item.itemId,
+      name: item.item.name,
+      date: item.item.date,
+    } as T.Event;
+  } catch (error) {
+    return null;
+  }
+};
+
+const loadItemsAsync = async () => {
+  await userbase.openDatabase({
+    databaseName: 'events',
+    changeHandler: async (items) => {
+      const events = items
+        .map(getEventFromItem)
+        .filter((event) => Boolean(event));
+
+      hasFinishedLoading.events = true;
+
+      cachedData.events = events;
+    },
+  });
+};
+
+export const initializeDb = async () => {
+  try {
+    await userbase.init({
+      appId: USERBASE_APP_ID,
+      sessionLength: sessionLengthInHours,
+    });
+
+    await loadItemsAsync();
+  } catch (error) {
+    console.log(error);
+    showNotification(error, 'error');
+  }
+};
+
+export const fetchEvents = async (month?: string) => {
+  try {
+    // Very ugly, but... works.
+    while (!hasFinishedLoading.events) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100);
+      });
+    }
+
+    const sortedEvents = cachedData.events
+      .filter((event) => {
+        if (!month) {
+          return true;
+        }
+
+        if (event.date >= `${month}-01` && event.date <= `${month}-31`) {
+          return true;
+        }
+
+        return false;
+      })
       .sort(sortByDate)
       .reverse();
 
@@ -159,31 +126,7 @@ export const fetchEvents = async (db: RxDatabase, month: string) => {
   return [];
 };
 
-export const fetchAllEvents = async (db: RxDatabase) => {
-  try {
-    const events: EventDocument[] = await db.events
-      .find()
-      .where('date')
-      .gte('2000-01-01')
-      .lte('2100-12-31')
-      .exec();
-    return events
-      .map((event) => event.toJSON())
-      .sort(sortByDate)
-      .reverse();
-  } catch (error) {
-    Swal.fire({
-      title: 'Uh-oh',
-      text: 'Something went wrong fetching all events.',
-    });
-
-    console.error(error);
-  }
-
-  return [];
-};
-
-export const saveEvent = async (db: RxDatabase, event: T.Event) => {
+export const saveEvent = async (event: T.Event) => {
   try {
     if (event.name.trim().length === 0) {
       showNotification('The event needs a valid name.', 'error');
@@ -195,21 +138,24 @@ export const saveEvent = async (db: RxDatabase, event: T.Event) => {
     }
 
     if (event.id === 'newEvent') {
-      await db.events.insert({
-        ...event,
-        id: `${Date.now().toString()}:${Math.random()}`,
-      });
-    } else {
-      const existingEvent: EventDocument = await db.events
-        .findOne()
-        .where('id')
-        .eq(event.id)
-        .exec();
-      await existingEvent.update({
-        $set: {
+      event.id = `${Date.now().toString()}:${Math.random()}`;
+
+      await userbase.insertItem({
+        databaseName: 'events',
+        item: {
           name: event.name,
           date: event.date,
-        },
+        } as T.EventContent,
+        itemId: event.id,
+      });
+    } else {
+      await userbase.updateItem({
+        databaseName: 'events',
+        item: {
+          name: event.name,
+          date: event.date,
+        } as T.EventContent,
+        itemId: event.id,
       });
     }
 
@@ -226,15 +172,19 @@ export const saveEvent = async (db: RxDatabase, event: T.Event) => {
   return false;
 };
 
-export const deleteEvent = async (db: RxDatabase, eventId: string) => {
+export const deleteEvent = async (eventId: string) => {
   try {
-    const existingEvent: EventDocument = await db.events
-      .findOne()
-      .where('id')
-      .eq(eventId)
-      .exec();
+    await userbase.deleteItem({
+      databaseName: 'events',
+      itemId: eventId,
+    });
 
-    await existingEvent.remove();
+    const cachedItemIndex = cachedData.events.findIndex(
+      (budget) => budget.id === eventId,
+    );
+    if (cachedItemIndex !== -1) {
+      cachedData.events.splice(cachedItemIndex, 1);
+    }
 
     return true;
   } catch (error) {
@@ -249,51 +199,43 @@ export const deleteEvent = async (db: RxDatabase, eventId: string) => {
   return false;
 };
 
-export const deleteAllData = async (db: RxDatabase, syncToken: string) => {
-  await db.events.remove();
+export const deleteAllData = async () => {
+  const events = await fetchEvents();
 
-  // NOTE: The erase below doesn't work locally, so we need the line above
-  const localDb = new PouchDB(localDbName);
-  // @ts-ignore erase comes from pouchdb-erase
-  await localDb.erase();
+  const deleteEventChunks: T.Event[][] = splitArrayInChunks(events, 10);
 
-  const remoteDb = new PouchDB(syncToken);
-  // @ts-ignore erase comes from pouchdb-erase
-  await remoteDb.erase();
+  for (const eventsToDelete of deleteEventChunks) {
+    await userbase.putTransaction({
+      databaseName: 'events',
+      operations: eventsToDelete.map((event) => ({
+        command: 'Delete',
+        itemId: event.id,
+      })),
+    });
+
+    // Wait a second, to avoid hitting rate limits
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000);
+    });
+  }
+
+  cachedData.events.length = 0;
+  hasFinishedLoading.events = false;
 };
 
-export const deleteLocalData = async (db: RxDatabase) => {
-  await db.events.remove();
-
-  // NOTE: The erase below doesn't work locally, so we need the line above
-  const localDb = new PouchDB(localDbName);
-  // @ts-ignore erase comes from pouchdb-erase
-  await localDb.erase();
-};
-
-type ExportAllData = (
-  db: RxDatabase,
-) => Promise<{
+type ExportAllData = () => Promise<{
   events?: T.Event[];
 }>;
 
-export const exportAllData: ExportAllData = async (db) => {
+export const exportAllData: ExportAllData = async () => {
+  // Don't export anything until we're done with the first full load
+  if (!hasFinishedLoading.events) {
+    return {};
+  }
+
   try {
-    // NOTE: The queries look weird because .dump() and simple .find() were returning indexes and other stuff
-    const events: EventDocument[] = await db.events
-      .find()
-      .where('date')
-      .gte('2000-01-01')
-      .lte('2100-12-31')
-      .exec();
-    const sortedEvents = events
-      .map((event) => {
-        const rawEvent = event.toJSON();
-        delete rawEvent._rev;
-        return rawEvent;
-      })
-      .sort(sortByDate);
-    return { events: sortedEvents };
+    const events = (await fetchEvents()).sort(sortByDate);
+    return { events };
   } catch (error) {
     Swal.fire({
       title: 'Uh-oh',
@@ -307,34 +249,63 @@ export const exportAllData: ExportAllData = async (db) => {
 };
 
 export const importData = async (
-  db: RxDatabase,
-  syncToken: string,
   replaceData: boolean,
   events: T.Event[],
 ) => {
+  // Don't import anything until we're done with the first full load
+  if (!hasFinishedLoading.events) {
+    return {};
+  }
+
   try {
     if (replaceData) {
-      await deleteAllData(db, syncToken);
+      await deleteAllData();
 
-      // Recreate collections
-      await db.addCollections({
-        events: {
-          schema: eventSchema,
-        },
-      });
+      await initializeDb();
+
+      // Very ugly, but... works.
+      while (!hasFinishedLoading.events) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 100);
+        });
+      }
     }
 
-    const chunkLength = 200;
+    const finalEventsToAdd: T.Event[] = [];
 
-    if (events.length > chunkLength) {
-      const chunkedEvents = splitArrayInChunks(events, chunkLength);
-      for (const eventsChunk of chunkedEvents) {
-        await db.events.bulkInsert(eventsChunk);
-        // Wait a second, to avoid hitting rate limits
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-    } else {
-      await db.events.bulkInsert(events);
+    for (const event of events) {
+      const newEventId = `${Date.now().toString()}:${Math.random()}`;
+      const newEvent: T.Event = {
+        id: newEventId,
+        name: event.name,
+        date: event.date,
+      };
+
+      finalEventsToAdd.push(newEvent);
+    }
+
+    const addEventChunks: T.Event[][] = splitArrayInChunks(
+      finalEventsToAdd,
+      10,
+    );
+
+    for (const eventsToAdd of addEventChunks) {
+      await userbase.putTransaction({
+        databaseName: 'events',
+        operations: eventsToAdd.map((event) => ({
+          command: 'Insert',
+          item: {
+            name: event.name,
+            date: event.date,
+          } as T.EventContent,
+          itemId: event.id,
+        })),
+      });
+
+      // Wait a second, to avoid hitting rate limits
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
     }
 
     return true;

@@ -20,15 +20,27 @@ const Login = () => {
   return (
     <>
       <Header />
-      <Title>Simple Event Management</Title>
+      <Title>Simple + Encrypted Event Management</Title>
       <Hero>
         <HeroText>
-          <Paragraph>Loggit is a simple event management app.</Paragraph>
+          <Paragraph>Loggit is a simple and <strong>encrypted</strong> event management app. You can{' '}
+            <a href="https://loggit.net">learn more about it here</a>, as
+            this is the app.</Paragraph>
           <Paragraph>
-            Currently it's only available for web, iOS, and macOS, and you can
-            browse the source code for all of the apps.
+            Currently it's available on every device via web browser, and you
+            can browse its source code.
+          </Paragraph>
+          <Paragraph>
+            You have a <strong>30-day free trial</strong> (no credit card
+            required), and at the end, you can pay <strong>€18 / year</strong>,
+            or <strong>€2 / month</strong>, no limits.
           </Paragraph>
           <LoginButton />
+          <Paragraph>
+            Note that logging in will take up a few seconds. This is
+            intentional, in order to generate a safer assymetric encryption key.
+            After logging in, the app should be blazing fast in any device.
+          </Paragraph>
         </HeroText>
       </Hero>
       <Subtitle>Need help?</Subtitle>
