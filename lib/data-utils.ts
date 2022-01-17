@@ -180,7 +180,7 @@ export const deleteEvent = async (eventId: string) => {
     });
 
     const cachedItemIndex = cachedData.events.findIndex(
-      (budget) => budget.id === eventId,
+      (event) => event.id === eventId,
     );
     if (cachedItemIndex !== -1) {
       cachedData.events.splice(cachedItemIndex, 1);
