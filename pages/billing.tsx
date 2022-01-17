@@ -26,7 +26,7 @@ const BillingPage = () => {
         setHasValidSubscription(userSession.subscriptionStatus === 'active');
         setIsTrialing(
           userSession.subscriptionStatus !== 'active' &&
-          Boolean(userSession.trialExpirationDate),
+            Boolean(userSession.trialExpirationDate),
         );
         setIsSubscriptionCanceled(Boolean(userSession.cancelSubscriptionAt));
         setIsSubscriptionMonthly(

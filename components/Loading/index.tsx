@@ -7,8 +7,9 @@ interface LoadingProps {
 const Loading = ({ isShowing = false }: LoadingProps) => {
   return (
     <div
-      className={`${styles.Loading} ${isShowing ? styles['Loading--show'] : ''
-        }`}
+      className={`${styles.Loading} ${
+        isShowing ? styles['Loading--show'] : ''
+      }`}
     >
       <svg
         version="1.1"

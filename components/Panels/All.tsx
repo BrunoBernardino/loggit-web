@@ -22,7 +22,7 @@ const Wrapper = styled.main`
   align-items: flex-start;
   flex-direction: column-reverse;
   max-width: 100vw;
-  
+
   @media only screen and (min-width: 800px) {
     flex-direction: row;
   }
@@ -50,9 +50,7 @@ const All = () => {
   const reloadData: ReloadData = async ({ monthToLoad } = {}) => {
     setIsLoading(true);
 
-    const fetchedEvents = await fetchEvents(
-      monthToLoad || monthInView,
-    );
+    const fetchedEvents = await fetchEvents(monthToLoad || monthInView);
     setEvents(fetchedEvents);
 
     const fetchedAllEvents = await fetchEvents();

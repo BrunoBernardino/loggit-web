@@ -85,7 +85,7 @@ const Container = styled.section`
   overflow: auto;
   ${safariFix}
   width: 90vw;
-  
+
   @media only screen and (min-width: 800px) {
     width: auto;
     margin: 0;

@@ -76,8 +76,9 @@ const Pricing = ({
             <Paragraph>
               Your trial{' '}
               {trialDaysLeft > 0
-                ? `will expire in ${trialDaysLeft} day${trialDaysLeft !== 1 ? 's' : ''
-                }`
+                ? `will expire in ${trialDaysLeft} day${
+                    trialDaysLeft !== 1 ? 's' : ''
+                  }`
                 : 'has expired'}
               .
             </Paragraph>

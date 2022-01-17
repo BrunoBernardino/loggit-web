@@ -105,8 +105,7 @@ const EventModal = (props: EventModalProps) => {
     const confirmationResult = await Swal.fire({
       icon: 'warning',
       title: 'Are you sure?',
-      text:
-        'Are you sure you want to delete this event?\n\nThis action is irreversible.',
+      text: 'Are you sure you want to delete this event?\n\nThis action is irreversible.',
       showDenyButton: true,
       showCancelButton: true,
       confirmButtonText: 'Yes!',
@@ -164,12 +163,20 @@ const EventModal = (props: EventModalProps) => {
           onKeyDown={onKeyDown}
         />
 
-        <Button onClick={() => addEvent()} type="primary" style={{ margin: '20px 0' }}>
+        <Button
+          onClick={() => addEvent()}
+          type="primary"
+          style={{ margin: '20px 0' }}
+        >
           {id ? 'Save Event' : 'Add Event'}
         </Button>
 
         {Boolean(id) && (
-          <Button onClick={() => removeEvent()} type="delete" style={{ margin: '20px 0' }}>
+          <Button
+            onClick={() => removeEvent()}
+            type="delete"
+            style={{ margin: '20px 0' }}
+          >
             Delete Event
           </Button>
         )}

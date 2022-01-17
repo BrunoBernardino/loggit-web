@@ -248,10 +248,7 @@ export const exportAllData: ExportAllData = async () => {
   return {};
 };
 
-export const importData = async (
-  replaceData: boolean,
-  events: T.Event[],
-) => {
+export const importData = async (replaceData: boolean, events: T.Event[]) => {
   // Don't import anything until we're done with the first full load
   if (!hasFinishedLoading.events) {
     return {};

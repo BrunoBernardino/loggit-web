@@ -20,7 +20,7 @@ const Container = styled.section`
   padding: 0 16px;
   width: 86vw;
   margin: 10px 0 30px;
-  
+
   @media only screen and (min-width: 800px) {
     max-width: 280px;
     margin-top: 5px;

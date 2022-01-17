@@ -93,8 +93,7 @@ const ImportExportModal = (props: ImportExportModalProps) => {
       const mergeOrReplaceDialogResult = await Swal.fire({
         icon: 'question',
         title: 'Merge or Replace?',
-        text:
-          'Do you want to merge this with your existing data, or replace it?',
+        text: 'Do you want to merge this with your existing data, or replace it?',
         showCancelButton: true,
         showDenyButton: true,
         confirmButtonText: 'Merge',
@@ -174,11 +173,19 @@ const ImportExportModal = (props: ImportExportModalProps) => {
           Learn more
         </Button>
 
-        <Button onClick={() => onRequestImport()} type="secondary" style={{ margin: '20px 0', alignSelf: 'center' }}>
+        <Button
+          onClick={() => onRequestImport()}
+          type="secondary"
+          style={{ margin: '20px 0', alignSelf: 'center' }}
+        >
           Import Data
         </Button>
 
-        <Button onClick={() => onRequestExport()} type="primary" style={{ margin: '20px 0', alignSelf: 'center' }}>
+        <Button
+          onClick={() => onRequestExport()}
+          type="primary"
+          style={{ margin: '20px 0', alignSelf: 'center' }}
+        >
           Export Data
         </Button>
       </Container>

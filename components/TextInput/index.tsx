@@ -24,15 +24,8 @@ const StyledInput = styled.input``;
 
 const TextInput: React.FC<TextInputProps> = forwardRef(
   (props: TextInputProps, ref: any) => {
-    const {
-      label,
-      id,
-      name,
-      className,
-      isDisabled,
-      note,
-      ...remainingProps
-    } = props;
+    const { label, id, name, className, isDisabled, note, ...remainingProps } =
+      props;
 
     return (
       <div className={`${className || ''} ${styles.TextInput}`}>

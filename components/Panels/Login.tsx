@@ -23,9 +23,12 @@ const Login = () => {
       <Title>Simple + Encrypted Event Management</Title>
       <Hero>
         <HeroText>
-          <Paragraph>Loggit is a simple and <strong>encrypted</strong> event management app. You can{' '}
-            <a href="https://loggit.net">learn more about it here</a>, as
-            this is the app.</Paragraph>
+          <Paragraph>
+            Loggit is a simple and <strong>encrypted</strong> event management
+            app. You can{' '}
+            <a href="https://loggit.net">learn more about it here</a>, as this
+            is the app.
+          </Paragraph>
           <Paragraph>
             Currently it's available on every device via web browser, and you
             can browse its source code.
