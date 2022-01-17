@@ -1,7 +1,11 @@
+import userbase from 'userbase-js';
 import Swal from 'sweetalert2';
 
 import { sessionNamespace } from 'lib/constants';
 import { AuthToken, Theme } from 'lib/types';
+
+const USERBASE_APP_ID = process.env.NEXT_PUBLIC_USERBASE_APP_ID;
+const sessionLengthInHours = 90 * 24;
 
 type SortableByDate = { date: string };
 export const sortByDate = (
@@ -43,6 +47,29 @@ export const splitArrayInChunks = (array: any[], chunkLength: number) => {
   return chunks;
 };
 
+export const uniqBy = (
+  array: any[],
+  predicate: string | ((item: any) => any),
+) => {
+  const filter =
+    typeof predicate === 'function'
+      ? predicate
+      : (object: any) => object[predicate];
+
+  return [
+    ...array
+      .reduce((map, item) => {
+        const key = item === null || item === undefined ? item : filter(item);
+
+        // eslint-disable-next-line
+        map.has(key) || map.set(key, item);
+
+        return map;
+      }, new Map())
+      .values(),
+  ];
+};
+
 export const showNotification = (
   message: string,
   type: 'success' | 'error' = 'success',
@@ -65,9 +92,8 @@ export const showNotification = (
   });
 };
 
-export const doLogin = (syncToken: string, theme: Theme = 'light') => {
+export const updatePreferences = (theme: Theme = 'light') => {
   const authToken: AuthToken = {
-    syncToken,
     theme,
   };
 
@@ -88,9 +114,10 @@ export const doLogin = (syncToken: string, theme: Theme = 'light') => {
   return false;
 };
 
-export const doLogout = () => {
+export const doLogout = async () => {
   try {
     localStorage.removeItem(`${sessionNamespace}:userInfo`);
+    await userbase.signOut();
     return true;
   } catch (error) {
     Swal.fire(
@@ -103,13 +130,47 @@ export const doLogout = () => {
   return false;
 };
 
+export const isLoggedIn = async () => {
+  try {
+    const session = await userbase.init({
+      appId: USERBASE_APP_ID,
+      sessionLength: sessionLengthInHours,
+    });
+    if (session.user) {
+      return true;
+    }
+  } catch (error) {
+    // Do nothing
+  }
+
+  return false;
+};
+
+export const getUserSession = async () => {
+  try {
+    const session = await userbase.init({
+      appId: USERBASE_APP_ID,
+      sessionLength: sessionLengthInHours,
+    });
+    return session.user;
+  } catch (error) {
+    // Do nothing
+  }
+
+  return null;
+};
+
 type GetUserInfo = () => AuthToken;
 export const getUserInfo: GetUserInfo = () => {
+  const defaultAuthToken: AuthToken = {
+    theme: 'light',
+  };
+
   try {
     const userInfo: AuthToken = JSON.parse(
       localStorage.getItem(`${sessionNamespace}:userInfo`),
     );
-    return userInfo;
+    return userInfo || defaultAuthToken;
   } catch (error) {
     Swal.fire({
       title: 'Uh-oh',
@@ -117,19 +178,5 @@ export const getUserInfo: GetUserInfo = () => {
     });
   }
 
-  return {
-    syncToken: null,
-    theme: 'light',
-  };
-};
-
-export const isLoggedIn = () => {
-  try {
-    const userInfo = getUserInfo();
-    return Boolean(userInfo.syncToken);
-  } catch (error) {
-    // Do nothing
-  }
-
-  return false;
+  return defaultAuthToken;
 };

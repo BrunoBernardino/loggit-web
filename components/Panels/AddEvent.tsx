@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
-import { RxDatabase } from 'rxdb';
 
 import Button from 'components/Button';
 import Event from 'components/Event';
@@ -12,7 +11,6 @@ import * as T from 'lib/types';
 interface AddEventProps {
   allEvents: T.Event[];
   reloadData: () => Promise<void>;
-  db: RxDatabase;
 }
 
 const Container = styled.section`
@@ -20,9 +18,14 @@ const Container = styled.section`
   flex-direction: column;
   flex: 1;
   padding: 0 16px;
-  max-width: 280px;
-  margin-top: -10px;
-  margin-right: -2px;
+  width: 86vw;
+  margin: 10px 0 30px;
+
+  @media only screen and (min-width: 800px) {
+    max-width: 280px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
 `;
 
 const ModalContainer = styled.section`
@@ -74,11 +77,7 @@ const Input = styled.input`
   }
 `;
 
-const AddButton = styled(Button)`
-  margin: 20px 0;
-`;
-
-const AddEvent = ({ allEvents, reloadData, db }: AddEventProps) => {
+const AddEvent = ({ allEvents, reloadData }: AddEventProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState('');
   const [date, setDate] = useState('');
@@ -102,7 +101,7 @@ const AddEvent = ({ allEvents, reloadData, db }: AddEventProps) => {
       parsedEvent.date = '';
     }
 
-    const success = await saveEvent(db, parsedEvent);
+    const success = await saveEvent(parsedEvent);
 
     setIsSubmitting(false);
 
@@ -182,13 +181,14 @@ const AddEvent = ({ allEvents, reloadData, db }: AddEventProps) => {
           type="date"
           onKeyDown={onKeyDown}
         />
-        <AddButton
+        <Button
           isDisabled={isSubmitting}
           onClick={() => addEvent()}
           type="primary"
+          style={{ margin: '20px 0' }}
         >
           {isSubmitting ? 'Adding...' : 'Add Event'}
-        </AddButton>
+        </Button>
       </ModalContainer>
     </Container>
   );

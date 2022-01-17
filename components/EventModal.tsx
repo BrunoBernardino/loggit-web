@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import Rodal from 'rodal';
 import Swal from 'sweetalert2';
-import { RxDatabase } from 'rxdb';
 
 import Button from 'components/Button';
 import { showNotification } from 'lib/utils';
@@ -17,7 +16,6 @@ interface EventModalProps {
   name: string;
   date: string;
   reloadData: () => Promise<void>;
-  db: RxDatabase;
 }
 
 const Container = styled.section`
@@ -58,16 +56,12 @@ const Input = styled.input`
   }
 `;
 
-const StyledButton = styled(Button)`
-  margin: 20px 0;
-`;
-
 const EventModal = (props: EventModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState(props.name);
   const [date, setDate] = useState(props.date);
 
-  const { id, isOpen, reloadData, db } = props;
+  const { id, isOpen, reloadData } = props;
 
   const onClose = useCallback(() => {
     const { onClose: closeModal } = props;
@@ -87,10 +81,10 @@ const EventModal = (props: EventModalProps) => {
     const parsedEvent: T.Event = {
       id: id || 'newEvent',
       name,
-      date: date ? date.substr(0, 10) : '',
+      date: date ? date.substring(0, 10) : '',
     };
 
-    const success = await saveEvent(db, parsedEvent);
+    const success = await saveEvent(parsedEvent);
 
     setIsSubmitting(false);
 
@@ -111,8 +105,7 @@ const EventModal = (props: EventModalProps) => {
     const confirmationResult = await Swal.fire({
       icon: 'warning',
       title: 'Are you sure?',
-      text:
-        'Are you sure you want to delete this event?\n\nThis action is irreversible.',
+      text: 'Are you sure you want to delete this event?\n\nThis action is irreversible.',
       showDenyButton: true,
       showCancelButton: true,
       confirmButtonText: 'Yes!',
@@ -125,7 +118,7 @@ const EventModal = (props: EventModalProps) => {
 
     setIsSubmitting(true);
 
-    const success = await deleteEvent(db, id);
+    const success = await deleteEvent(id);
 
     setIsSubmitting(false);
 
@@ -170,14 +163,22 @@ const EventModal = (props: EventModalProps) => {
           onKeyDown={onKeyDown}
         />
 
-        <StyledButton onClick={() => addEvent()} type="primary">
+        <Button
+          onClick={() => addEvent()}
+          type="primary"
+          style={{ margin: '20px 0' }}
+        >
           {id ? 'Save Event' : 'Add Event'}
-        </StyledButton>
+        </Button>
 
         {Boolean(id) && (
-          <StyledButton onClick={() => removeEvent()} type="delete">
+          <Button
+            onClick={() => removeEvent()}
+            type="delete"
+            style={{ margin: '20px 0' }}
+          >
             Delete Event
-          </StyledButton>
+          </Button>
         )}
       </Container>
     </Rodal>

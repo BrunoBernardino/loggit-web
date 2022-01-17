@@ -21,10 +21,16 @@ const Container = styled.section`
   display: flex;
   flex-direction: column;
   flex: 1;
-  margin: 0 10px;
+  margin: 20px 10px;
   max-height: 80vh;
   overflow: auto;
   ${safariFix}
+  width: 90vw;
+
+  @media only screen and (min-width: 800px) {
+    width: auto;
+    margin: 0 10px;
+  }
 `;
 
 const NoEventsFoundText = styled.p`
@@ -50,7 +56,7 @@ const defaultEvent = {
   date: moment().format('YYYY-MM-DD'),
 };
 
-const Events = ({ events, reloadData, db }: EventsProps) => {
+const Events = ({ events, reloadData }: EventsProps) => {
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [chosenEvent, setChosenEvent] = useState({
     ...defaultEvent,
@@ -82,7 +88,6 @@ const Events = ({ events, reloadData, db }: EventsProps) => {
         isOpen={isEventModalOpen}
         onClose={() => closeEventModal()}
         reloadData={reloadData}
-        db={db}
         {...chosenEvent}
       />
     </Container>
