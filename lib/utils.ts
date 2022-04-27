@@ -97,7 +97,7 @@ export function isRunningLocally(urlPatternResult: URLPatternResult) {
   return urlPatternResult.hostname.input === 'localhost';
 }
 
-// TODO: The functions below are used in the frontend, but this copy allows for easier testing and type-checking
+// NOTE: The functions below are used in the frontend, but this copy allows for easier testing and type-checking
 
 export function escapeHtml(unsafe: string) {
   return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
