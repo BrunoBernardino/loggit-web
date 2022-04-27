@@ -37,4 +37,4 @@ This is vanilla JS, web standards, no frameworks. If you'd like to see/use [the 
 ## TODOs:
 
 - [ ] Enable true offline mode (securely cache data, allow read-only)
-  - https://github.com/smallbets/userbase/issues/255 has interesting ideas, until it's not natively supported
+  - https://github.com/smallbets/userbase/issues/255 has interesting ideas, while it's not natively supported
