@@ -7,9 +7,9 @@
     window.app = window.app || {};
     initializeLoading();
 
-    if (navigator && navigator.serviceWorker) {
-      navigator.serviceWorker.register('/public/js/sw.js');
-    }
+    // if (navigator && navigator.serviceWorker) {
+    //   navigator.serviceWorker.register('/public/js/sw.js');
+    // }
 
     // Expose helper functions
     window.app.isLoggedIn = false;
