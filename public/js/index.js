@@ -70,7 +70,7 @@
       }
 
       window.app.hideLoading();
-      isAddingEvent = false;
+      isLoggingInOrSigningUp = false;
     }
 
     function getEventItemHtmlElement(event) {

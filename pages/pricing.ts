@@ -35,12 +35,15 @@ export function pageContent() {
         <p class="expiration">
           ...
         </p>
-        <button class="secondary" type="button" id="subscribe-month" style="margin: 3rem auto 1.5rem;">
-          Pay €2 / month
-        </button>
-        <button type="button" id="subscribe-year">
-          Pay €18 / year
-        </button>
+        <div class="buttons-wrapper">
+          <button class="secondary" type="button" id="subscribe-month" style="margin: 3rem auto 1.5rem;">
+            Pay €2 / month
+          </button>
+          <span class="or">or</span>
+          <button type="button" id="subscribe-year">
+            Pay €18 / year
+          </button>
+        </div>
       </section>
     </template>
 
