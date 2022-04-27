@@ -36,7 +36,7 @@ export function pageContent() {
           ...
         </p>
         <div class="buttons-wrapper">
-          <button class="secondary" type="button" id="subscribe-month" style="margin: 3rem auto 1.5rem;">
+          <button class="secondary" type="button" id="subscribe-month">
             Pay €2 / month
           </button>
           <span class="or">or</span>

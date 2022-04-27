@@ -50,14 +50,14 @@ export function pageContent() {
     <template id="trial-subscription">
       <section>
         <h2>You are on an active trial!</h2>
-        <p>If you're ready to pay, you probably want to check out the <a href="/pricing">pricing section</a>instead.</p>
+        <p>If you're ready to pay, you probably want to check out the <a href="/pricing">pricing section</a> instead.</p>
       </section>
     </template>
 
     <template id="invalid-subscription">
       <section>
         <h2>Your subscription has expired!</h2>
-        <p>You probably want to check out the <a href="/pricing">pricing section</a>instead.</p>
+        <p>You probably want to check out the <a href="/pricing">pricing section</a> instead.</p>
       </section>
     </template>
 
