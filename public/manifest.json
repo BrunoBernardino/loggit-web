@@ -3,12 +3,12 @@
   "short_name": "Loggit",
   "icons": [
     {
-      "src": "/images/logomark.svg",
+      "src": "/public/images/logomark.svg",
       "sizes": "763x763 any",
       "type": "image/svg+xml"
     },
     {
-      "src": "/images/favicon.png",
+      "src": "/public/images/favicon.png",
       "sizes": "310x310",
       "type": "image/png",
       "purpose": "any maskable"
