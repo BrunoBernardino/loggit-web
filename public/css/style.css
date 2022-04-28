@@ -103,11 +103,15 @@ h1, h2, h3, strong {
 header {
   display: block;
   text-align: center;
-  padding: 1.3rem 0;
+  padding: 0 0 1rem;
   background-color: var(--color-dark-background);
 }
 
 @media only screen and (min-width: 600px) {
+  header {
+    padding: 1.3rem 0;
+  }
+
   header .wrapper {
     display: flex;
     flex: 1;
@@ -118,17 +122,18 @@ header {
 }
 
 header h1 {
-  font-size: 3rem;
-  line-height: 3rem;
+  font-size: 1rem;
+  line-height: 1rem;
   font-weight: 100;
 }
 
 header h1 a {
   text-decoration: none;
+  display: block;
 }
 
 header h1 a:hover {
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 header h1 img {
@@ -136,23 +141,24 @@ header h1 img {
 }
 
 header nav ul {
-    display: block;
-    margin: 20px auto;
+  display: flex;
+  flex: 1;
+  margin: 20px auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
 
 @media only screen and (min-width: 600px) {
   header nav ul {
-    display: flex;
-    flex: 1;
     flex-wrap: nowrap;
-    align-items: center;
     justify-content: flex-end;
   }
 }
 
 header nav ul li {
-    display: block;
-    margin: 0 0.3rem 0.3rem;
+  display: block;
+  margin: 0 0.3rem 0.3rem;
 }
 
 @media only screen and (min-width: 600px) {

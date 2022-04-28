@@ -72,6 +72,12 @@ export function pageContent() {
           </button>
         </form>
       </section>
+      <section class="hidden" data-has-valid-session style="margin-top: 2rem;">
+        <h2>Delete account</h2>
+        <p>
+          You can delete your account and cancel your subscription from the <a href="/billing">billing section</a>.
+        </p>
+      </section>
     </section>
 
     <script src="/public/js/settings.js"></script>
