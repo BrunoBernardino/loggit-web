@@ -1,8 +1,4 @@
-try {
-  await import('https://deno.land/std@0.135.0/dotenv/load.ts');
-} catch (_error) {
-  // Do nothing
-}
+await import('https://deno.land/std@0.135.0/dotenv/load.ts');
 
 import header from '../components/header.ts';
 import footer from '../components/footer.ts';
