@@ -1,4 +1,4 @@
-import 'https://deno.land/std@0.135.0/dotenv/load.ts';
+import 'https://deno.land/std@0.142.0/dotenv/load.ts';
 
 import header from '../components/header.ts';
 import footer from '../components/footer.ts';
@@ -71,11 +71,6 @@ function basicLayout(htmlContent: string, { currentPath, titlePrefix, descriptio
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script src="/public/js/script.js"></script>
       <script src="https://js.stripe.com/v3/" defer></script>
-      <script
-        src="https://cdn.usefathom.com/script.js"
-        site="NCGAAGVZ"
-        defer
-      ></script>
     </body>
     </html>
     `;
@@ -86,7 +81,7 @@ export function basicLayoutResponse(htmlContent: string, options: BasicLayoutOpt
     headers: {
       'content-type': 'text/html; charset=utf-8',
       'content-security-policy':
-        'default-src \'self\' https://*.userbase.com wss://*.userbase.com https://*.stripe.com data: blob:; child-src \'self\' data: blob: https://*.stripe.com; img-src \'self\' https://*.usefathom.com data: blob: https://*.stripe.com; style-src \'self\' \'unsafe-inline\' https://*.stripe.com; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https://*.usefathom.com https://*.stripe.com https://*.userbase.com https://*.jsdelivr.net; connect-src \'self\' https://*.userbase.com wss://*.userbase.com https://*.stripe.com;',
+        'default-src \'self\' https://*.userbase.com wss://*.userbase.com https://*.stripe.com data: blob:; child-src \'self\' data: blob: https://*.stripe.com; img-src \'self\' data: blob: https://*.stripe.com; style-src \'self\' \'unsafe-inline\' https://*.stripe.com; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https://*.stripe.com https://*.userbase.com https://*.jsdelivr.net; connect-src \'self\' https://*.userbase.com wss://*.userbase.com https://*.stripe.com;',
       'x-frame-options': 'DENY',
       'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
     },
@@ -215,4 +210,23 @@ export function calculateFrequencyFromGrouppedEvent(groupedEvent: GroupedEvent) 
   );
 
   return `${frequencyNumberPerDay}x / day`;
+}
+
+export async function recordPageView(pathname: string) {
+  try {
+    await fetch('https://plausible.io/api/event', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+      body: JSON.stringify({
+        domain: baseUrl.replace('https://', ''),
+        name: 'pageview',
+        url: `${baseUrl}${pathname}`,
+      }),
+    });
+  } catch (error) {
+    console.log('Failed to log pageview');
+    console.error(error);
+  }
 }

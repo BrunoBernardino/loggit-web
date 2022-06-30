@@ -1,4 +1,4 @@
-import { serve } from 'https://deno.land/std@0.135.0/http/server.ts';
+import { serve } from 'https://deno.land/std@0.142.0/http/server.ts';
 import routes, { Route } from './routes.ts';
 
 function handler(request: Request) {
@@ -21,7 +21,5 @@ function handler(request: Request) {
 export const abortController = new AbortController();
 
 const PORT = Deno.env.get('PORT') || 8000;
-
-console.log(`Listening on http://localhost:${PORT}`);
 
 serve(handler, { port: PORT as number, signal: abortController.signal });

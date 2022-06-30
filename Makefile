@@ -10,4 +10,4 @@ format:
 test:
 	deno fmt --check
 	deno lint
-	deno test --allow-net --allow-read --allow-env=PORT,USERBASE_APP_ID
+	deno test --allow-net --allow-read --allow-env=PORT,USERBASE_APP_ID --check=all

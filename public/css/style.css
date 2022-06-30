@@ -484,8 +484,14 @@ a.button.secondary:focus {
 /* Index */
 .main-section {
   margin: 2rem auto;
-  padding-bottom: 2rem;
+  padding: 0 1rem 2rem;
   min-height: 50vh;
+}
+
+@media only screen and (min-width: 600px) {
+  .main-section {
+    padding: 0 0 2rem;
+  }
 }
 
 .main-section p {
@@ -618,7 +624,7 @@ a.button.secondary:focus {
   max-height: 100vh;
   overflow: auto;
   min-height: 30vh;
-  min-width: calc(100vw - 20px);
+  min-width: calc(80vw - 20px);
 }
 
 @media only screen and (min-width: 600px) {
