@@ -36,7 +36,9 @@ function createBasicRouteHandler(id: string, pathname: string) {
         // @ts-ignore necessary because of the comment above
         const { pageContent, pageAction } = pages[id];
 
-        recordPageView(match.pathname.input);
+        if (!request.url.startsWith('http://localhost')) {
+          recordPageView(match.pathname.input);
+        }
 
         if (request.method !== 'GET') {
           return pageAction(request, match) as Response;
