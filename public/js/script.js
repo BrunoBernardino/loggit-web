@@ -415,7 +415,7 @@
   async function importData(replaceData, events) {
     // Don't import anything until we're done with the first full load
     if (!hasFinishedLoading.events) {
-      return {};
+      return false;
     }
 
     try {

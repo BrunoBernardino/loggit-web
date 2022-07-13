@@ -75,7 +75,7 @@
           isUpdating = true;
           window.app.showLoading();
 
-          const success = await importData(
+          const success = await window.app.dataUtils.importData(
             mergeOrReplaceDialogResult.isDenied,
             events,
           );
