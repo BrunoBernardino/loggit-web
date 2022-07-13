@@ -8,7 +8,12 @@
       "proseWrap": "preserve"
     },
     "files": {
-      "exclude": ["public/js/stripe.js", "public/js/sweetalert.js", "public/js/userbase.js"]
+      "exclude": [
+        "public/js/stripe.js",
+        "public/js/sweetalert.js",
+        "public/js/userbase.js",
+        "public/js/userbase.js.map"
+      ]
     }
   },
   "lint": {
@@ -21,7 +26,8 @@
       "exclude": [
         "public/js/stripe.js",
         "public/js/sweetalert.js",
-        "public/js/userbase.js"
+        "public/js/userbase.js",
+        "public/js/userbase.js.map"
       ]
     }
   }
