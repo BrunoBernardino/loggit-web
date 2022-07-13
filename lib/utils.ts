@@ -67,10 +67,10 @@ function basicLayout(htmlContent: string, { currentPath, titlePrefix, descriptio
           sessionLength: ${sessionLengthInHours},
         };
       </script>
-      <script src="https://sdk.userbase.com/2/userbase.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script src="/public/js/userbase.js"></script>
       <script src="/public/js/script.js"></script>
-      <script src="https://js.stripe.com/v3/" defer></script>
+      <script src="/public/js/sweetalert.js" defer></script>
+      <script src="/public/js/stripe.js" defer></script>
     </body>
     </html>
     `;
@@ -81,7 +81,7 @@ export function basicLayoutResponse(htmlContent: string, options: BasicLayoutOpt
     headers: {
       'content-type': 'text/html; charset=utf-8',
       'content-security-policy':
-        'default-src \'self\' https://*.userbase.com wss://*.userbase.com https://*.stripe.com data: blob:; child-src \'self\' data: blob: https://*.stripe.com; img-src \'self\' data: blob: https://*.stripe.com; style-src \'self\' \'unsafe-inline\' https://*.stripe.com; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https://*.stripe.com https://*.userbase.com https://*.jsdelivr.net; connect-src \'self\' https://*.userbase.com wss://*.userbase.com https://*.stripe.com;',
+        'default-src \'self\' https://*.userbase.com wss://*.userbase.com https://*.stripe.com data: blob:; child-src \'self\' data: blob: https://*.stripe.com; img-src \'self\' data: blob: https://*.stripe.com; style-src \'self\' \'unsafe-inline\' https://*.stripe.com; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\';',
       'x-frame-options': 'DENY',
       'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
     },

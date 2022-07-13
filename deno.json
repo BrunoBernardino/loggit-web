@@ -6,12 +6,22 @@
       "indentWidth": 2,
       "singleQuote": true,
       "proseWrap": "preserve"
+    },
+    "files": {
+      "exclude": ["public/js/stripe.js", "public/js/sweetalert.js", "public/js/userbase.js"]
     }
   },
   "lint": {
     "rules": {
       "exclude": [
         "no-explicit-any"
+      ]
+    },
+    "files": {
+      "exclude": [
+        "public/js/stripe.js",
+        "public/js/sweetalert.js",
+        "public/js/userbase.js"
       ]
     }
   }

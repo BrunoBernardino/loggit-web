@@ -58,8 +58,9 @@ self.addEventListener('install', (event) => {
       '/public/js/index.js',
       '/public/css/style.css',
       '/public/manifest.json',
-      // 'https://sdk.userbase.com/2/userbase.js',
-      // 'https://cdn.jsdelivr.net/npm/sweetalert2@11',
+      '/public/js/userbase.js',
+      '/public/js/stripe.js',
+      '/public/js/sweetalert.js',
     ]),
   );
 });
