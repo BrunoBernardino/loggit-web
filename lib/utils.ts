@@ -49,9 +49,9 @@ function basicLayout(htmlContent: string, { currentPath, titlePrefix, descriptio
 
       <link rel="manifest" href="/public/manifest.json" />
       
-      <link rel="alternate" type="application/rss+xml" href="https://news.onbrn.com/rss.xml" />
-      <link rel="alternate" type="application/atom+xml" href="https://news.onbrn.com/atom.xml" />
-      <link rel="alternate" type="application/feed+json" href="https://news.onbrn.com/feed.json" />
+      <link rel="alternate" type="application/rss+xml" href="https://loggit.net/rss.xml" />
+      <link rel="alternate" type="application/atom+xml" href="https://loggit.net/atom.xml" />
+      <link rel="alternate" type="application/feed+json" href="https://loggit.net/feed.json" />
     </head>
     <body>
       ${loading()}
