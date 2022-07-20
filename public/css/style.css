@@ -613,7 +613,7 @@ a.button.secondary:focus {
   flex: 1;
   justify-content: flex-start;
   align-items: center;
-  flex-direction: column;
+  /* flex-direction: column; */
 }
 
 .events-wrapper {
@@ -625,12 +625,14 @@ a.button.secondary:focus {
   overflow: auto;
   min-height: 30vh;
   min-width: calc(80vw - 20px);
+  width: calc(100vw - 50px);
 }
 
 @media only screen and (min-width: 600px) {
   .events-wrapper {
-    margin: 0 10px;
+    margin: 0 20px;
     min-width: auto;
+    width: auto;
   }
 }
 
@@ -644,7 +646,7 @@ a.button.secondary:focus {
 
 @media only screen and (min-width: 600px) {
   #add-event {
-    max-width: 280px;
+    max-width: 320px;
     margin-top: 5px;
     margin-bottom: 10px;
   }
