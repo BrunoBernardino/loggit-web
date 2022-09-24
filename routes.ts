@@ -1,5 +1,5 @@
-import { readableStreamFromReader } from 'https://deno.land/std@0.142.0/streams/mod.ts';
-import { baseUrl, basicLayoutResponse, isRunningLocally, PageContentResult, recordPageView } from './lib/utils.ts';
+import { serveFile } from 'https://deno.land/std@0.156.0/http/file_server.ts';
+import { baseUrl, basicLayoutResponse, PageContentResult, recordPageView } from './lib/utils.ts';
 
 // NOTE: This won't be necessary once https://github.com/denoland/deploy_feedback/issues/1 is closed
 import * as indexPage from './pages/index.ts';
@@ -18,7 +18,7 @@ export interface Route {
   handler: (
     request: Request,
     match: URLPatternResult,
-  ) => (Response | Promise<Response>);
+  ) => Response | Promise<Response>;
 }
 
 interface Routes {
@@ -104,12 +104,11 @@ const routes: Routes = {
   robots: {
     pattern: new URLPattern({ pathname: '/robots.txt' }),
     handler: async (_request) => {
-      const file = await Deno.open(`public/robots.txt`, { read: true });
-      const readableStream = readableStreamFromReader(file);
+      const fileContents = await Deno.readTextFile(`public/robots.txt`);
 
       const oneDayInSeconds = 24 * 60 * 60;
 
-      return new Response(readableStream, {
+      return new Response(fileContents, {
         headers: {
           'content-type': 'text/plain',
           'cache-control': `max-age=${oneDayInSeconds}, public`,
@@ -119,39 +118,11 @@ const routes: Routes = {
   },
   public: {
     pattern: new URLPattern({ pathname: '/public/:filePath*' }),
-    handler: async (_request, match) => {
+    handler: (request, match) => {
       const { filePath } = match.pathname.groups;
 
       try {
-        const file = await Deno.open(`public/${filePath}`, { read: true });
-        const readableStream = readableStreamFromReader(file);
-
-        const oneDayInSeconds = isRunningLocally(match) ? 0 : 24 * 60 * 60;
-
-        const headers: ResponseInit['headers'] = {
-          'cache-control': `max-age=${oneDayInSeconds}, public`,
-        };
-
-        // NOTE: It would be nice to figure out a better way to deduce content-type without dependencies
-        const fileExtension = filePath.split('.').pop()?.toLowerCase();
-
-        if (fileExtension === 'js') {
-          headers['content-type'] = 'text/javascript';
-        } else if (fileExtension === 'css') {
-          headers['content-type'] = 'text/css';
-        } else if (fileExtension === 'jpg') {
-          headers['content-type'] = 'image/jpeg';
-        } else if (fileExtension === 'png') {
-          headers['content-type'] = 'image/png';
-        } else if (fileExtension === 'svg') {
-          headers['content-type'] = 'image/svg+xml';
-        } else if (fileExtension === 'json') {
-          headers['content-type'] = 'text/json';
-        }
-
-        return new Response(readableStream, {
-          headers,
-        });
+        return serveFile(request, `public/${filePath}`);
       } catch (error) {
         if (error.toString().includes('NotFound')) {
           return new Response('Not Found', { status: 404 });
