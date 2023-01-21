@@ -30,5 +30,7 @@
         "public/js/userbase.js.map"
       ]
     }
-  }
+  },
+  "importMap": "./import_map.json",
+  "lock": false
 }

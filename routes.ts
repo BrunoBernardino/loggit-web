@@ -1,5 +1,5 @@
-import { serveFile } from 'https://deno.land/std@0.156.0/http/file_server.ts';
-import { baseUrl, basicLayoutResponse, PageContentResult, recordPageView } from './lib/utils.ts';
+import { serveFile } from 'std/http/file_server.ts';
+import { baseUrl, basicLayoutResponse, PageContentResult } from './lib/utils.ts';
 
 // NOTE: This won't be necessary once https://github.com/denoland/deploy_feedback/issues/1 is closed
 import * as indexPage from './pages/index.ts';
@@ -35,10 +35,6 @@ function createBasicRouteHandler(id: string, pathname: string) {
 
         // @ts-ignore necessary because of the comment above
         const { pageContent, pageAction } = pages[id];
-
-        if (!request.url.startsWith('http://localhost')) {
-          recordPageView(match.pathname.input);
-        }
 
         if (request.method !== 'GET') {
           return pageAction(request, match) as Response;
@@ -95,7 +91,7 @@ const routes: Routes = {
 
       return new Response(sitemapContent, {
         headers: {
-          'content-type': 'application/xml',
+          'content-type': 'application/xml; charset=utf-8',
           'cache-control': `max-age=${oneDayInSeconds}, public`,
         },
       });
@@ -103,17 +99,8 @@ const routes: Routes = {
   },
   robots: {
     pattern: new URLPattern({ pathname: '/robots.txt' }),
-    handler: async (_request) => {
-      const fileContents = await Deno.readTextFile(`public/robots.txt`);
-
-      const oneDayInSeconds = 24 * 60 * 60;
-
-      return new Response(fileContents, {
-        headers: {
-          'content-type': 'text/plain',
-          'cache-control': `max-age=${oneDayInSeconds}, public`,
-        },
-      });
+    handler: (request) => {
+      return serveFile(request, `public/robots.txt`);
     },
   },
   public: {
