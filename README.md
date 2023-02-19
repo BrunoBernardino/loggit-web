@@ -66,8 +66,4 @@ $ make exec-db # runs psql inside the postgres container, useful for running dir
 
 ## TODOs:
 
-- [ ] Subscriptions check cron
-
----
-
 - [ ] Enable true offline mode (securely cache data, allow read-only)

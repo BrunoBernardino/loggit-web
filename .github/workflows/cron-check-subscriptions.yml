@@ -21,5 +21,7 @@ jobs:
           POSTGRESQL_DBNAME: ${{ secrets.POSTGRESQL_DBNAME }}
           POSTGRESQL_PORT: ${{ secrets.POSTGRESQL_PORT }}
           POSTGRESQL_CAFILE: ${{ secrets.POSTGRESQL_CAFILE }}
+          PADDLE_VENDOR_ID: ${{ secrets.PADDLE_VENDOR_ID }}
+          PADDLE_API_KEY: ${{ secrets.PADDLE_API_KEY }}
         run: |
           make crons/check-subscriptions

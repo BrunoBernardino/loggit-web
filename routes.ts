@@ -9,6 +9,7 @@ import * as billingPage from './pages/billing.ts';
 import * as apiUserPage from './pages/api/user.ts';
 import * as apiSessionPage from './pages/api/session.ts';
 import * as apiSubscriptionPage from './pages/api/subscription.ts';
+import * as apiDataPage from './pages/api/data.ts';
 import * as apiEventsPage from './pages/api/events.ts';
 const pages = {
   index: indexPage,
@@ -18,6 +19,7 @@ const pages = {
   apiUser: apiUserPage,
   apiSession: apiSessionPage,
   apiSubscription: apiSubscriptionPage,
+  apiData: apiDataPage,
   apiEvents: apiEventsPage,
 };
 
@@ -152,6 +154,7 @@ const routes: Routes = {
   apiUser: createBasicRouteHandler('apiUser', '/api/user'),
   apiSession: createBasicRouteHandler('apiSession', '/api/session'),
   apiSubscription: createBasicRouteHandler('apiSubscription', '/api/subscription'),
+  apiData: createBasicRouteHandler('apiData', '/api/data'),
   apiEvents: createBasicRouteHandler('apiEvents', '/api/events'),
 };
 

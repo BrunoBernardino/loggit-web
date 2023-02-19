@@ -460,18 +460,14 @@ export async function deleteAllData() {
 
 export async function exportAllData() {
   try {
-    const session = LocalData.get('session')!;
-
-    const events = await fetchEvents('all');
+    const events: (Omit<Event, 'user_id'> & { user_id?: string })[] = await fetchEvents('all');
 
     if (!events) {
       throw new Error('Failed to fetch events');
     }
 
-    const cryptoKey = await getCryptoKey(session.keyPair);
-
     for (const event of events) {
-      event.name = await Encryption.decrypt(event.name, cryptoKey);
+      delete event.user_id;
     }
 
     return { events };
