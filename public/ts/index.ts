@@ -88,9 +88,9 @@ document.addEventListener('app-loaded', async () => {
       }
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    window.app.hideLoading();
 
-    window.location.reload();
+    isLoggingInOrSigningUp = false;
   }
 
   function getEventItemHtmlElement(event: Event) {

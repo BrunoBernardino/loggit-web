@@ -38,13 +38,13 @@ async function createUserAction(request: Request) {
     return new Response('Bad Request', { status: 400 });
   }
 
-  const sessionId = await createSession(user);
+  const session = await createSession(user, true);
 
-  if (!sessionId) {
+  if (!session) {
     return new Response('Bad Request', { status: 400 });
   }
 
-  return new Response(JSON.stringify({ user, session_id: sessionId }), {
+  return new Response(JSON.stringify({ user, session_id: session.id }), {
     headers: { 'Content-Type': 'application/json; charset=utf-8' },
   });
 }

@@ -117,15 +117,15 @@ export async function getSessionById(id: string) {
   return session;
 }
 
-export async function createSession(user: User, sessionExpiresAt?: Date) {
+export async function createSession(user: User, isNewUser = false) {
   // Add new user session to the db
   const oneMonthFromToday = new Date(new Date().setUTCMonth(new Date().getUTCMonth() + 1));
 
   const newSession: Omit<UserSession, 'id' | 'created_at'> = {
     user_id: user.id,
-    expires_at: sessionExpiresAt || oneMonthFromToday,
+    expires_at: oneMonthFromToday,
     last_seen_at: new Date(),
-    verified: false,
+    verified: isNewUser,
   };
 
   const newUserSessionResult = (await db.query<UserSession>(
