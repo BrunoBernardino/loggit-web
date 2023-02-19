@@ -1,4 +1,4 @@
-import { html } from '../lib/utils.ts';
+import { helpEmail, html } from '/lib/utils.ts';
 
 export default function footer() {
   return html`
@@ -54,7 +54,7 @@ export default function footer() {
       <h3 class="links">
         <a href="https://loggit.net/blog">Blog</a> | 
         <a href="https://loggit.net/privacy">Privacy Policy</a> | 
-        <a href="mailto:me@brunobernardino.com">Get Help</a> | <span class="by">by</span> 
+        <a href="mailto:${helpEmail}">Get Help</a> | <span class="by">by</span> 
         <a href="https://brunobernardino.com">Bruno Bernardino</a>
       </h3>
     </footer>

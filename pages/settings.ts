@@ -1,4 +1,5 @@
-import { html, PageContentResult } from '../lib/utils.ts';
+import { html, PageContentResult } from '/lib/utils.ts';
+import verificationCodeModal from '/components/modals/verification-code.ts';
 
 export function pageAction() {
   return new Response('Not Implemented', { status: 501 });
@@ -14,7 +15,7 @@ export function pageContent() {
       <section class="hidden" data-has-valid-session>
         <h2>Import/Export data</h2>
         <p>
-          You can import a JSON file exported from Loggit (v1 or v2) before. <a href="https://loggit.net/import-export-file-format">Learn more about the file format</a>.
+          You can import a JSON file exported from Loggit (v1, v2, or v3) before. <a href="https://loggit.net/import-export-file-format">Learn more about the file format</a>.
         </p>
         <div class="buttons-wrapper">
           <button type="button" id="import-button">
@@ -50,15 +51,6 @@ export function pageContent() {
         <h2>Change Password / Encryption Key</h2>
         <form id="change-password-form">
           <fieldset class="input-wrapper">
-            <label for="current-password">Current Password / Encryption Key</label>
-            <input
-              id="current-password"
-              type="password"
-              placeholder="something secret"
-              name="current-password"
-            />
-          </fieldset>
-          <fieldset class="input-wrapper">
             <label for="new-password">New Password / Encryption Key</label>
             <input
               id="new-password"
@@ -80,7 +72,9 @@ export function pageContent() {
       </section>
     </section>
 
-    <script src="/public/js/settings.js"></script>
+    ${verificationCodeModal()}
+
+    <script src="/public/ts/settings.ts" type="module"></script>
   `;
 
   return {

@@ -1,10 +1,12 @@
+const CACHE_VERSION = 'loggit_v0';
+
 const addResourcesToCache = async (resources) => {
-  const cache = await caches.open('v0');
+  const cache = await caches.open(CACHE_VERSION);
   await cache.addAll(resources);
 };
 
 const putInCache = async (request, response) => {
-  const cache = await caches.open('v0');
+  const cache = await caches.open(CACHE_VERSION);
   await cache.put(request, response);
 };
 

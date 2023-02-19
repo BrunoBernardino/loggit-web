@@ -1,18 +1,26 @@
 import 'std/dotenv/load.ts';
+import { emit } from 'https://deno.land/x/emit@0.15.0/mod.ts';
+import sass from 'https://deno.land/x/denosass@1.0.6/mod.ts';
+import { serveFile } from 'std/http/file_server.ts';
 
-import header from '../components/header.ts';
-import footer from '../components/footer.ts';
-import loading from '../components/loading.ts';
+import header from '/components/header.ts';
+import footer from '/components/footer.ts';
+import loading from '/components/loading.ts';
 
 // This allows us to have nice html syntax highlighting in template literals
 export const html = String.raw;
 
-const USERBASE_APP_ID = Deno.env.get('USERBASE_APP_ID') || '';
-const sessionLengthInHours = 90 * 24; // 3 months
+export const PORT = Deno.env.get('PORT') || 8000;
+export const PADDLE_VENDOR_ID = Deno.env.get('PADDLE_VENDOR_ID') || '';
+// export const PADDLE_MONTHLY_PLAN_ID = 45375; // Sandbox
+export const PADDLE_MONTHLY_PLAN_ID = 814705; // Production
+// export const PADDLE_YEARLY_PLAN_ID = 45376; // Sandbox
+export const PADDLE_YEARLY_PLAN_ID = 814704; // Production
 
-export const baseUrl = 'https://app.loggit.net';
+export const baseUrl = Deno.env.get('BASE_URL') || 'https://app.loggit.net';
 export const defaultTitle = 'Loggit — Log your unscheduled events';
 export const defaultDescription = 'Simple and encrypted event management.';
+export const helpEmail = 'help@loggit.net';
 
 export interface PageContentResult {
   htmlContent: string;
@@ -45,6 +53,7 @@ function basicLayout(htmlContent: string, { currentPath, titlePrefix, descriptio
       <meta property="og:title" content="${title}" />
       <link rel="icon" href="/public/images/favicon.png" type="image/png">
       <link rel="apple-touch-icon" href="/public/images/favicon.png">
+      <link rel="stylesheet" href="/public/scss/style.scss">
       <link rel="stylesheet" href="/public/css/style.css">
 
       <link rel="manifest" href="/public/manifest.json" />
@@ -61,16 +70,15 @@ function basicLayout(htmlContent: string, { currentPath, titlePrefix, descriptio
       </section>
       ${footer()}
       <script type="text/javascript">
-        window.app = {};
-        window.app.userbaseConfig = {
-          appId: "${USERBASE_APP_ID}",
-          sessionLength: ${sessionLengthInHours},
+        window.app = {
+          PADDLE_VENDOR_ID: '${PADDLE_VENDOR_ID}',
+          PADDLE_MONTHLY_PLAN_ID: '${PADDLE_MONTHLY_PLAN_ID}',
+          PADDLE_YEARLY_PLAN_ID: '${PADDLE_YEARLY_PLAN_ID}',
         };
       </script>
-      <script src="/public/js/userbase.js"></script>
       <script src="/public/js/script.js"></script>
       <script src="/public/js/sweetalert.js" defer></script>
-      <script src="/public/js/stripe.js" defer></script>
+      <script src="https://cdn.paddle.com/paddle/paddle.js" defer></script>
     </body>
     </html>
     `;
@@ -81,7 +89,7 @@ export function basicLayoutResponse(htmlContent: string, options: BasicLayoutOpt
     headers: {
       'content-type': 'text/html; charset=utf-8',
       'content-security-policy':
-        'default-src \'self\' https://*.userbase.com wss://*.userbase.com https://*.stripe.com data: blob:; child-src \'self\' data: blob: https://*.stripe.com; img-src \'self\' data: blob: https://*.stripe.com; style-src \'self\' \'unsafe-inline\' https://*.stripe.com; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\';',
+        'default-src \'self\'; child-src \'self\' https://buy.paddle.com/ https://sandbox-buy.paddle.com/; img-src \'self\' https://cdn.paddle.com/paddle/ https://sandbox-cdn.paddle.com/paddle/; style-src \'self\' \'unsafe-inline\' https://cdn.paddle.com/paddle/ https://sandbox-cdn.paddle.com/paddle/; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https://cdn.paddle.com/paddle/ https://sandbox-cdn.paddle.com/paddle/;',
       'x-frame-options': 'DENY',
       'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
     },
@@ -89,45 +97,84 @@ export function basicLayoutResponse(htmlContent: string, options: BasicLayoutOpt
 }
 
 export function isRunningLocally(urlPatternResult: URLPatternResult) {
-  return urlPatternResult.hostname.input === 'localhost';
+  return ['localhost', 'loggit.local'].includes(urlPatternResult.hostname.input);
 }
-
-// NOTE: The functions below are used in the frontend, but this copy allows for easier testing and type-checking
 
 export function escapeHtml(unsafe: string) {
   return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
     .replaceAll('\'', '&#039;');
 }
 
-type SortableByDate = { date: string };
-export function sortByDate(
-  objectA: SortableByDate,
-  objectB: SortableByDate,
-) {
-  if (objectA.date < objectB.date) {
-    return -1;
-  }
-  if (objectA.date > objectB.date) {
-    return 1;
-  }
-  return 0;
+async function transpileTs(content: string, specifier: URL) {
+  const urlStr = specifier.toString();
+  const result = await emit(specifier, {
+    load(specifier: string) {
+      if (specifier !== urlStr) {
+        return Promise.resolve({ kind: 'module', specifier, content: '' });
+      }
+      return Promise.resolve({ kind: 'module', specifier, content });
+    },
+  });
+  return result[urlStr];
 }
 
-type SortableByCount = { count: number };
-export function sortByCount(
-  objectA: SortableByCount,
-  objectB: SortableByCount,
-) {
-  if (objectA.count < objectB.count) {
-    return 1;
+export async function serveFileWithTs(request: Request, filePath: string, extraHeaders?: ResponseInit['headers']) {
+  const response = await serveFile(request, filePath);
+
+  if (response.status !== 200) {
+    return response;
   }
-  if (objectA.count > objectB.count) {
-    return -1;
-  }
-  return 0;
+
+  const tsCode = await response.text();
+  const jsCode = await transpileTs(tsCode, new URL('file:///src.ts'));
+  const { headers } = response;
+  headers.set('content-type', 'application/javascript; charset=utf-8');
+  headers.delete('content-length');
+
+  return new Response(jsCode, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+    ...(extraHeaders || {}),
+  });
 }
 
-export function splitArrayInChunks(array: any[], chunkLength: number) {
+function transpileSass(content: string) {
+  const compiler = sass(content);
+
+  return compiler.to_string('compressed') as string;
+}
+
+export async function serveFileWithSass(request: Request, filePath: string, extraHeaders?: ResponseInit['headers']) {
+  const response = await serveFile(request, filePath);
+
+  if (response.status !== 200) {
+    return response;
+  }
+
+  const sassCode = await response.text();
+  const cssCode = transpileSass(sassCode);
+  const { headers } = response;
+  headers.set('content-type', 'text/css; charset=utf-8');
+  headers.delete('content-length');
+
+  return new Response(cssCode, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+    ...(extraHeaders || {}),
+  });
+}
+
+export function generateRandomCode(length = 6) {
+  const getRandomDigit = () => Math.floor(Math.random() * (10)); // 0-9
+
+  const codeDigits = Array.from({ length }).map(getRandomDigit);
+
+  return codeDigits.join('');
+}
+
+export function splitArrayInChunks<T = any>(array: T[], chunkLength: number) {
   const chunks = [];
   let chunkIndex = 0;
   const arrayLength = array.length;
@@ -137,77 +184,4 @@ export function splitArrayInChunks(array: any[], chunkLength: number) {
   }
 
   return chunks;
-}
-
-export function uniqueBy(
-  array: any[],
-  predicate: string | ((item: any) => any),
-) {
-  const filter = typeof predicate === 'function' ? predicate : (object: any) => object[predicate];
-
-  return [
-    ...array
-      .reduce((map, item) => {
-        const key = item === null || item === undefined ? item : filter(item);
-
-        map.has(key) || map.set(key, item);
-
-        return map;
-      }, new Map())
-      .values(),
-  ];
-}
-
-export function dateDiffInDays(startDate: Date, endDate: Date) {
-  return Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-}
-
-interface GroupedEvent {
-  count: number;
-  firstLog: string;
-  lastLog: string;
-}
-
-export function calculateFrequencyFromGrouppedEvent(groupedEvent: GroupedEvent) {
-  const monthDifference = Math.round(
-    Math.abs(dateDiffInDays(new Date(groupedEvent.firstLog), new Date(groupedEvent.lastLog)) / 30),
-  );
-
-  // This event has only existed for less than 6 months, so we can't know if it'll repeat any more
-  if (monthDifference <= 6 && groupedEvent.count < 12) {
-    return `${groupedEvent.count || 1}x / year`;
-  }
-
-  const frequencyNumberPerMonth = Math.round(
-    groupedEvent.count / monthDifference,
-  );
-
-  // When potentially less than once per month, check frequency per year
-  if (frequencyNumberPerMonth <= 1) {
-    const frequencyNumberPerYear = Math.round(
-      (groupedEvent.count / monthDifference) * 12,
-    );
-
-    if (frequencyNumberPerYear < 12) {
-      return `${frequencyNumberPerYear || 1}x / year`;
-    }
-  }
-
-  if (frequencyNumberPerMonth < 15) {
-    return `${frequencyNumberPerMonth}x / month`;
-  }
-
-  const frequencyNumberPerWeek = Math.round(
-    groupedEvent.count / monthDifference / 4,
-  );
-
-  if (frequencyNumberPerWeek < 7) {
-    return `${frequencyNumberPerMonth}x / week`;
-  }
-
-  const frequencyNumberPerDay = Math.round(
-    groupedEvent.count / monthDifference / 30,
-  );
-
-  return `${frequencyNumberPerDay}x / day`;
 }

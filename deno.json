@@ -9,27 +9,30 @@
     },
     "files": {
       "exclude": [
-        "public/js/stripe.js",
-        "public/js/sweetalert.js",
-        "public/js/userbase.js",
-        "public/js/userbase.js.map"
+        "public/js/sweetalert.js"
       ]
     }
   },
   "lint": {
     "rules": {
       "exclude": [
-        "no-explicit-any"
+        "no-explicit-any",
+        "no-window-prefix"
       ]
     },
     "files": {
       "exclude": [
-        "public/js/stripe.js",
-        "public/js/sweetalert.js",
-        "public/js/userbase.js",
-        "public/js/userbase.js.map"
+        "public/js/sweetalert.js"
       ]
     }
+  },
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "dom.asynciterable",
+      "deno.ns"
+    ]
   },
   "importMap": "./import_map.json",
   "lock": false

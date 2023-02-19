@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: loggit
+    env: docker
+    plan: starter
+    healthCheckPath: /
+    envVars:
+      - key: BASE_URL
+        fromService:
+          name: loggit
+          type: web
+          property: host
+      - key: POSTGRESQL_HOST
+        fromDatabase:
+          name: loggit
+          property: host
+      - key: POSTGRESQL_USER
+        fromDatabase:
+          name: loggit
+          property: user
+      - key: POSTGRESQL_PASSWORD
+        fromDatabase:
+          name: loggit
+          property: password
+      - key: POSTGRESQL_DBNAME
+        fromDatabase:
+          name: loggit
+          property: database
+      - key: POSTGRESQL_PORT
+        fromDatabase:
+          name: loggit
+          property: port
+
+databases:
+  - name: loggit
+    plan: starter

@@ -1,4 +1,5 @@
-import { html, PageContentResult } from '../lib/utils.ts';
+import { helpEmail, html, PageContentResult } from '/lib/utils.ts';
+import verificationCodeModal from '/components/modals/verification-code.ts';
 
 export function pageAction() {
   return new Response('Not Implemented', { status: 501 });
@@ -61,7 +62,7 @@ export function pageContent() {
         </section>
         <h2>Need help?</h2>
         <p>
-          If you're having any issues or have any questions, <strong><a href="mailto:me@brunobernardino.com">please reach out</a></strong>.
+          If you're having any issues or have any questions, <strong><a href="mailto:${helpEmail}">please reach out</a></strong>.
         </p>
       </div>
       
@@ -216,7 +217,9 @@ export function pageContent() {
       </swal-button>
     </template>
 
-    <script src="/public/js/index.js"></script>
+    ${verificationCodeModal()}
+
+    <script src="/public/ts/index.ts" type="module"></script>
   `;
 
   return {
