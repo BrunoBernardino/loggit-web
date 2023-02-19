@@ -37,28 +37,28 @@ async function cleanupInactiveUsers() {
     const userIdsToDelete = result.map((user) => user.id);
 
     await db.query(
-      sql`DELETE FROM "loggit_user_sessions" WHERE "user_id" IN ($1)`,
+      sql`DELETE FROM "loggit_user_sessions" WHERE "user_id" = ANY($1)`,
       [
         userIdsToDelete,
       ],
     );
 
     await db.query(
-      sql`DELETE FROM "loggit_verification_codes" WHERE "user_id" IN ($1)`,
+      sql`DELETE FROM "loggit_verification_codes" WHERE "user_id" = ANY($1)`,
       [
         userIdsToDelete,
       ],
     );
 
     await db.query(
-      sql`DELETE FROM "loggit_events" WHERE "user_id" IN ($1)`,
+      sql`DELETE FROM "loggit_events" WHERE "user_id" = ANY($1)`,
       [
         userIdsToDelete,
       ],
     );
 
     await db.query(
-      sql`DELETE FROM "loggit_users" WHERE "id" IN ($1)`,
+      sql`DELETE FROM "loggit_users" WHERE "id" = ANY($1)`,
       [
         userIdsToDelete,
       ],
