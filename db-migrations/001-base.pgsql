@@ -11,7 +11,7 @@ SET row_security = off;
 
 
 --
--- Name: loggit_user_sessions; Type: TABLE; Schema: public; Owner: brn
+-- Name: loggit_user_sessions; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.loggit_user_sessions (
@@ -24,11 +24,11 @@ CREATE TABLE public.loggit_user_sessions (
 );
 
 
-ALTER TABLE public.loggit_user_sessions OWNER TO brn;
+ALTER TABLE public.loggit_user_sessions OWNER TO postgres;
 
 
 --
--- Name: loggit_verification_codes; Type: TABLE; Schema: public; Owner: brn
+-- Name: loggit_verification_codes; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.loggit_verification_codes (
@@ -41,11 +41,11 @@ CREATE TABLE public.loggit_verification_codes (
 );
 
 
-ALTER TABLE public.loggit_verification_codes OWNER TO brn;
+ALTER TABLE public.loggit_verification_codes OWNER TO postgres;
 
 
 --
--- Name: loggit_events; Type: TABLE; Schema: public; Owner: brn
+-- Name: loggit_events; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.loggit_events (
@@ -57,11 +57,11 @@ CREATE TABLE public.loggit_events (
 );
 
 
-ALTER TABLE public.loggit_events OWNER TO brn;
+ALTER TABLE public.loggit_events OWNER TO postgres;
 
 
 --
--- Name: loggit_users; Type: TABLE; Schema: public; Owner: brn
+-- Name: loggit_users; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.loggit_users (
@@ -75,11 +75,11 @@ CREATE TABLE public.loggit_users (
 );
 
 
-ALTER TABLE public.loggit_users OWNER TO brn;
+ALTER TABLE public.loggit_users OWNER TO postgres;
 
 
 --
--- Name: loggit_migrations; Type: TABLE; Schema: public; Owner: brn
+-- Name: loggit_migrations; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.loggit_migrations (
@@ -88,11 +88,11 @@ CREATE TABLE public.loggit_migrations (
     executed_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE public.loggit_migrations OWNER TO brn;
+ALTER TABLE public.loggit_migrations OWNER TO postgres;
 
 
 --
--- Name: loggit_user_sessions loggit_user_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: brn
+-- Name: loggit_user_sessions loggit_user_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.loggit_user_sessions
@@ -100,7 +100,7 @@ ALTER TABLE ONLY public.loggit_user_sessions
 
 
 --
--- Name: loggit_verification_codes loggit_verification_codes_pkey; Type: CONSTRAINT; Schema: public; Owner: brn
+-- Name: loggit_verification_codes loggit_verification_codes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.loggit_verification_codes
@@ -108,7 +108,7 @@ ALTER TABLE ONLY public.loggit_verification_codes
 
 
 --
--- Name: loggit_events loggit_events_pkey; Type: CONSTRAINT; Schema: public; Owner: brn
+-- Name: loggit_events loggit_events_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.loggit_events
@@ -116,7 +116,7 @@ ALTER TABLE ONLY public.loggit_events
 
 
 --
--- Name: loggit_users loggit_users_pkey; Type: CONSTRAINT; Schema: public; Owner: brn
+-- Name: loggit_users loggit_users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.loggit_users
@@ -124,7 +124,7 @@ ALTER TABLE ONLY public.loggit_users
 
 
 --
--- Name: loggit_user_sessions loggit_user_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: brn
+-- Name: loggit_user_sessions loggit_user_sessions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.loggit_user_sessions
@@ -132,7 +132,7 @@ ALTER TABLE ONLY public.loggit_user_sessions
 
 
 --
--- Name: loggit_verification_codes loggit_verification_codes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: brn
+-- Name: loggit_verification_codes loggit_verification_codes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.loggit_verification_codes
@@ -140,7 +140,7 @@ ALTER TABLE ONLY public.loggit_verification_codes
 
 
 --
--- Name: loggit_events loggit_events_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: brn
+-- Name: loggit_events loggit_events_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.loggit_events
@@ -148,49 +148,49 @@ ALTER TABLE ONLY public.loggit_events
 
 
 --
--- Name: TABLE loggit_user_sessions; Type: ACL; Schema: public; Owner: brn
+-- Name: TABLE loggit_user_sessions; Type: ACL; Schema: public; Owner: postgres
 --
 
-GRANT ALL ON TABLE public.loggit_user_sessions TO brn;
-
-
---
--- Name: TABLE loggit_verification_codes; Type: ACL; Schema: public; Owner: brn
---
-
-GRANT ALL ON TABLE public.loggit_verification_codes TO brn;
+GRANT ALL ON TABLE public.loggit_user_sessions TO postgres;
 
 
 --
--- Name: TABLE loggit_events; Type: ACL; Schema: public; Owner: brn
+-- Name: TABLE loggit_verification_codes; Type: ACL; Schema: public; Owner: postgres
 --
 
-GRANT ALL ON TABLE public.loggit_events TO brn;
-
-
---
--- Name: TABLE loggit_users; Type: ACL; Schema: public; Owner: brn
---
-
-GRANT ALL ON TABLE public.loggit_users TO brn;
+GRANT ALL ON TABLE public.loggit_verification_codes TO postgres;
 
 
 --
--- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: brn
+-- Name: TABLE loggit_events; Type: ACL; Schema: public; Owner: postgres
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE brn IN SCHEMA public GRANT ALL ON SEQUENCES  TO brn;
-
-
---
--- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: public; Owner: brn
---
-
-ALTER DEFAULT PRIVILEGES FOR ROLE brn IN SCHEMA public GRANT ALL ON FUNCTIONS  TO brn;
+GRANT ALL ON TABLE public.loggit_events TO postgres;
 
 
 --
--- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: brn
+-- Name: TABLE loggit_users; Type: ACL; Schema: public; Owner: postgres
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE brn IN SCHEMA public GRANT ALL ON TABLES  TO brn;
+GRANT ALL ON TABLE public.loggit_users TO postgres;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON SEQUENCES  TO postgres;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: public; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON FUNCTIONS  TO postgres;
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: public; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT ALL ON TABLES  TO postgres;
