@@ -10,17 +10,24 @@ import loading from '/components/loading.ts';
 // This allows us to have nice html syntax highlighting in template literals
 export const html = String.raw;
 
-export const PORT = Deno.env.get('PORT') || 8000;
-export const PADDLE_VENDOR_ID = Deno.env.get('PADDLE_VENDOR_ID') || '';
-// export const PADDLE_MONTHLY_PLAN_ID = 45375; // Sandbox
-export const PADDLE_MONTHLY_PLAN_ID = 814705; // Production
-// export const PADDLE_YEARLY_PLAN_ID = 45376; // Sandbox
-export const PADDLE_YEARLY_PLAN_ID = 814704; // Production
-
 export const baseUrl = Deno.env.get('BASE_URL') || 'https://app.loggit.net';
 export const defaultTitle = 'Loggit — Log your unscheduled events';
 export const defaultDescription = 'Simple and encrypted event management.';
 export const helpEmail = 'help@loggit.net';
+
+export const PORT = Deno.env.get('PORT') || 8000;
+export const STRIPE_MONTHLY_URL = 'https://buy.stripe.com/9AQbKp7fK6YN4uIbJ4';
+export const STRIPE_YEARLY_URL = 'https://buy.stripe.com/bIYbKpbw00Ap5yMbJ5';
+export const STRIPE_CUSTOMER_URL = 'https://billing.stripe.com/p/login/4gw15w3G9bDyfWU6oo';
+export const PAYPAL_MONTHLY_URL =
+  `https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-0SF64456K4965003KMP46EEQ&return_url=${
+    encodeURI(`${baseUrl}/pricing?paypalCheckoutId=true`)
+  }`;
+export const PAYPAL_YEARLY_URL =
+  `https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-5MG25343D5096853SMP46FCY&return_url=${
+    encodeURI(`${baseUrl}/pricing?paypalCheckoutId=true`)
+  }`;
+export const PAYPAL_CUSTOMER_URL = 'https://www.paypal.com';
 
 export interface PageContentResult {
   htmlContent: string;
@@ -71,14 +78,16 @@ function basicLayout(htmlContent: string, { currentPath, titlePrefix, descriptio
       ${footer()}
       <script type="text/javascript">
         window.app = {
-          PADDLE_VENDOR_ID: '${PADDLE_VENDOR_ID}',
-          PADDLE_MONTHLY_PLAN_ID: '${PADDLE_MONTHLY_PLAN_ID}',
-          PADDLE_YEARLY_PLAN_ID: '${PADDLE_YEARLY_PLAN_ID}',
+          STRIPE_MONTHLY_URL: '${STRIPE_MONTHLY_URL}',
+          STRIPE_YEARLY_URL: '${STRIPE_YEARLY_URL}',
+          STRIPE_CUSTOMER_URL: '${STRIPE_CUSTOMER_URL}',
+          PAYPAL_MONTHLY_URL: '${PAYPAL_MONTHLY_URL}',
+          PAYPAL_YEARLY_URL: '${PAYPAL_YEARLY_URL}',
+          PAYPAL_CUSTOMER_URL: '${PAYPAL_CUSTOMER_URL}',
         };
       </script>
       <script src="/public/js/script.js"></script>
       <script src="/public/js/sweetalert.js" defer></script>
-      <script src="https://cdn.paddle.com/paddle/paddle.js" defer></script>
     </body>
     </html>
     `;
@@ -89,15 +98,16 @@ export function basicLayoutResponse(htmlContent: string, options: BasicLayoutOpt
     headers: {
       'content-type': 'text/html; charset=utf-8',
       'content-security-policy':
-        'default-src \'self\'; child-src \'self\' https://buy.paddle.com/ https://sandbox-buy.paddle.com/; img-src \'self\' https://cdn.paddle.com/paddle/ https://sandbox-cdn.paddle.com/paddle/; style-src \'self\' \'unsafe-inline\' https://cdn.paddle.com/paddle/ https://sandbox-cdn.paddle.com/paddle/; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https://cdn.paddle.com/paddle/ https://sandbox-cdn.paddle.com/paddle/;',
+        'default-src \'self\'; child-src \'self\'; img-src \'self\'; style-src \'self\' \'unsafe-inline\'; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\';',
       'x-frame-options': 'DENY',
+      'x-content-type-options': 'nosniff',
       'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
     },
   });
 }
 
 export function isRunningLocally(urlPatternResult: URLPatternResult) {
-  return ['localhost', 'loggit.local'].includes(urlPatternResult.hostname.input);
+  return urlPatternResult.hostname.input.includes('localhost');
 }
 
 export function escapeHtml(unsafe: string) {

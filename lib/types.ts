@@ -11,11 +11,9 @@ export interface User {
   encrypted_key_pair: EncryptedData;
   subscription: {
     external: {
-      paddle?: {
+      paypal?: {
         user_id: string;
         subscription_id: string;
-        update_url: string;
-        cancel_url: string;
       };
       stripe?: {
         user_id: string;

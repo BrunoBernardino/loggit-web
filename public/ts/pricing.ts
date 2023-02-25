@@ -4,15 +4,9 @@ import LocalData from './local-data.ts';
 document.addEventListener('app-loaded', async () => {
   const user = await checkForValidSession();
 
+  const urlSearchParams = new URLSearchParams(window.location.search);
+
   const subscriptionInfo = document.getElementById('subscription-info') as HTMLDivElement;
-
-  const { Paddle } = window;
-
-  if (window.location.href.includes('localhost')) {
-    Paddle.Environment.set('sandbox');
-  }
-
-  Paddle.Setup({ vendor: parseInt(window.app.PADDLE_VENDOR_ID, 10) });
 
   async function subscriptionSuccessfull() {
     showNotification('Alright! Will reload in a couple of seconds...', 'success');
@@ -21,7 +15,13 @@ document.addEventListener('app-loaded', async () => {
 
     const headers = commonRequestHeaders;
 
-    const body: { user_id: string; session_id: string } = { user_id: session.userId, session_id: session.sessionId };
+    const provider = urlSearchParams.get('paypalCheckoutId') ? 'paypal' : 'stripe';
+
+    const body: { user_id: string; session_id: string; provider: 'stripe' | 'paypal' } = {
+      user_id: session.userId,
+      session_id: session.sessionId,
+      provider,
+    };
 
     try {
       await fetch('/api/subscription', { method: 'POST', headers, body: JSON.stringify(body) });
@@ -29,12 +29,15 @@ document.addEventListener('app-loaded', async () => {
       // Do nothing
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     window.location.href = '/billing';
   }
 
-  async function subscribeToPaddleProduct(paddleProductId: number) {
+  async function subscribeMonthly(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (!user) {
       showNotification('You need to signup or login before subscribing!', 'error');
       await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -42,36 +45,65 @@ document.addEventListener('app-loaded', async () => {
       return;
     }
 
-    const session = LocalData.get('session')!;
+    const { Swal } = window;
 
-    const customData = {
-      user_id: session.userId,
-      session_id: session.sessionId,
-    };
-
-    Paddle.Checkout.open({
-      product: paddleProductId,
-      email: session.email,
-      customData,
-      passthrough: customData,
-      successCallback: subscriptionSuccessfull,
-      displayModeTheme: 'dark',
-      method: 'inline',
+    const { value: provider } = await Swal.fire({
+      text: 'Do you prefer paying via Stripe or PayPal?',
+      focusConfirm: false,
+      allowEscapeKey: true,
+      buttons: {
+        paypal: {
+          text: 'PayPal',
+          value: 'paypal',
+        },
+        stripe: {
+          text: 'Stripe',
+          value: 'stripe',
+        },
+      },
     });
-  }
 
-  async function subscribeMonthly(event: Event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    await subscribeToPaddleProduct(parseInt(window.app.PADDLE_MONTHLY_PLAN_ID, 10));
+    if (provider === 'paypal') {
+      window.location.href = window.app.PAYPAL_MONTHLY_URL;
+    } else if (provider) {
+      window.location.href = window.app.STRIPE_MONTHLY_URL;
+    }
   }
 
   async function subscribeYearly(event: Event) {
     event.preventDefault();
     event.stopPropagation();
 
-    await subscribeToPaddleProduct(parseInt(window.app.PADDLE_YEARLY_PLAN_ID, 10));
+    if (!user) {
+      showNotification('You need to signup or login before subscribing!', 'error');
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      window.location.href = '/';
+      return;
+    }
+
+    const { Swal } = window;
+
+    const { value: provider } = await Swal.fire({
+      text: 'Do you prefer paying via Stripe or PayPal?',
+      focusConfirm: false,
+      allowEscapeKey: true,
+      buttons: {
+        paypal: {
+          text: 'PayPal',
+          value: 'paypal',
+        },
+        stripe: {
+          text: 'Stripe',
+          value: 'stripe',
+        },
+      },
+    });
+
+    if (provider === 'paypal') {
+      window.location.href = window.app.PAYPAL_YEARLY_URL;
+    } else if (provider) {
+      window.location.href = window.app.STRIPE_YEARLY_URL;
+    }
   }
 
   function getValidSubscriptionHtmlElement() {
@@ -101,7 +133,11 @@ document.addEventListener('app-loaded', async () => {
     return clonedElement;
   }
 
-  function updateUI() {
+  async function updateUI() {
+    if (urlSearchParams.get('stripeCheckoutId') || urlSearchParams.get('paypalCheckoutId')) {
+      await subscriptionSuccessfull();
+    }
+
     const isSubscriptionValid = user?.status === 'active';
     let trialDaysLeft = 30;
 

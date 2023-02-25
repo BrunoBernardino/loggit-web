@@ -140,7 +140,7 @@ export async function sendVerifyUpdatePasswordEmail(
   await sendEmailWithTemplate(email, 'verify-update', data);
 }
 
-export async function sendUpdateEmailInPaddleEmail(
+export async function sendUpdateEmailInProviderEmail(
   oldEmail: string,
   newEmail: string,
 ) {

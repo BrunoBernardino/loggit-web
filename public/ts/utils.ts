@@ -6,14 +6,16 @@ declare global {
   interface Window {
     app: App;
     Swal: any;
-    Paddle: any;
   }
 }
 
 export interface App {
-  PADDLE_VENDOR_ID: string;
-  PADDLE_MONTHLY_PLAN_ID: string;
-  PADDLE_YEARLY_PLAN_ID: string;
+  STRIPE_MONTHLY_URL: string;
+  STRIPE_YEARLY_URL: string;
+  STRIPE_CUSTOMER_URL: string;
+  PAYPAL_MONTHLY_URL: string;
+  PAYPAL_YEARLY_URL: string;
+  PAYPAL_CUSTOMER_URL: string;
   isLoggedIn: boolean;
   showLoading: () => void;
   hideLoading: () => void;

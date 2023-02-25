@@ -11,7 +11,14 @@ document.addEventListener('app-loaded', async () => {
     event.preventDefault();
     event.stopPropagation();
 
-    const updateUrl = user?.subscription.external.paddle?.update_url;
+    let updateUrl = '';
+
+    if (user?.subscription.external.stripe) {
+      updateUrl = window.app.STRIPE_CUSTOMER_URL;
+    }
+    if (user?.subscription.external.paypal) {
+      updateUrl = window.app.PAYPAL_CUSTOMER_URL;
+    }
 
     if (!updateUrl) {
       showNotification('You need to reach out in order to update your subscription, sorry!', 'error');
@@ -25,7 +32,14 @@ document.addEventListener('app-loaded', async () => {
     event.preventDefault();
     event.stopPropagation();
 
-    const cancelUrl = user?.subscription.external.paddle?.cancel_url;
+    let cancelUrl = '';
+
+    if (user?.subscription.external.stripe) {
+      cancelUrl = window.app.STRIPE_CUSTOMER_URL;
+    }
+    if (user?.subscription.external.paypal) {
+      cancelUrl = window.app.PAYPAL_CUSTOMER_URL;
+    }
 
     if (!cancelUrl) {
       showNotification('You need to reach out in order to cancel your subscription, sorry!', 'error');
@@ -39,7 +53,14 @@ document.addEventListener('app-loaded', async () => {
     event.preventDefault();
     event.stopPropagation();
 
-    const updateUrl = user?.subscription.external.paddle?.update_url;
+    let updateUrl = '';
+
+    if (user?.subscription.external.stripe) {
+      updateUrl = window.app.STRIPE_CUSTOMER_URL;
+    }
+    if (user?.subscription.external.paypal) {
+      updateUrl = window.app.PAYPAL_CUSTOMER_URL;
+    }
 
     if (!updateUrl) {
       showNotification('You need to reach out in order to resume your subscription, sorry!', 'error');
@@ -122,7 +143,7 @@ document.addEventListener('app-loaded', async () => {
     const clonedElement = (template.content.firstElementChild as HTMLDivElement).cloneNode(true) as HTMLDivElement;
 
     const paymentTextElement = clonedElement.querySelector('.subscription-value') as HTMLSpanElement;
-    paymentTextElement.textContent = isSubscriptionMonthly ? '€2 or $3 / month' : '€18 or $20 / year';
+    paymentTextElement.textContent = isSubscriptionMonthly ? '€2 / month' : '€18 / year';
 
     const notCanceledElement = clonedElement.querySelector('#subscription-is-not-canceled') as HTMLDivElement;
     const canceledElement = clonedElement.querySelector('#subscription-is-canceled') as HTMLDivElement;

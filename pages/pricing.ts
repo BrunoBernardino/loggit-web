@@ -10,7 +10,7 @@ export function pageContent() {
       <h1>Pricing</h1>
       <section class="hero">
         <p>Pricing is simple.</p>
-        <p>You have a <strong>30-day free trial</strong> (no credit card required), and at the end, you can pay <strong>€18 or $20 / year</strong>, or <strong>€2 or $3 / month</strong>, no limits.</p>
+        <p>You have a <strong>30-day free trial</strong> (no credit card required), and at the end, you can pay <strong>€18 / year</strong>, or <strong>€2 / month</strong>, no limits.</p>
       </section>
       <div data-has-invalid-session>
         <h2>Signup or Login first</h2>
@@ -37,11 +37,11 @@ export function pageContent() {
         </p>
         <div class="buttons-wrapper">
           <button class="secondary" type="button" id="subscribe-month">
-            Pay €2 or $3 / month
+            Pay €2 / month
           </button>
           <span class="or">or</span>
           <button type="button" id="subscribe-year">
-            Pay €18 or $20 / year
+            Pay €18 / year
           </button>
         </div>
       </section>

@@ -21,7 +21,8 @@ jobs:
           POSTGRESQL_DBNAME: ${{ secrets.POSTGRESQL_DBNAME }}
           POSTGRESQL_PORT: ${{ secrets.POSTGRESQL_PORT }}
           POSTGRESQL_CAFILE: ${{ secrets.POSTGRESQL_CAFILE }}
-          PADDLE_VENDOR_ID: ${{ secrets.PADDLE_VENDOR_ID }}
-          PADDLE_API_KEY: ${{ secrets.PADDLE_API_KEY }}
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+          PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
+          PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
         run: |
           make crons/check-subscriptions

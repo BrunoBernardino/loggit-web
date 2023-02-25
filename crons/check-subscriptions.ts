@@ -1,8 +1,8 @@
 import Database, { sql } from '/lib/interfaces/database.ts';
-import { getSubscribedUsers } from '/lib/providers/paddle.ts';
+import { getSubscriptions as getStripeSubscriptions } from '/lib/providers/stripe.ts';
+// import { getSubscriptions as getPaypalSubscriptions } from '/lib/providers/paypal.ts';
 import { updateUser } from '/lib/data-utils.ts';
 import { User } from '/lib/types.ts';
-import { PADDLE_MONTHLY_PLAN_ID } from '/lib/utils.ts';
 
 const db = new Database();
 
@@ -14,28 +14,31 @@ async function checkSubscriptions() {
 
     let updatedUsers = 0;
 
-    const paddleUsers = await getSubscribedUsers();
+    const stripeSubscriptions = await getStripeSubscriptions();
 
-    for (const paddleUser of paddleUsers) {
-      const matchingUser = users.find((user) => user.email === paddleUser.user_email);
+    for (const subscription of stripeSubscriptions) {
+      // Skip subscriptions that aren't related to Loggit
+      if (!subscription.items.data.some((item) => item.price.id.startsWith('loggit-'))) {
+        continue;
+      }
+
+      const matchingUser = users.find((user) => user.email === subscription.customer.email);
 
       if (matchingUser) {
-        if (!matchingUser.subscription.external.paddle) {
-          matchingUser.subscription.external.paddle = {
-            user_id: paddleUser.user_id.toString(),
-            subscription_id: paddleUser.subscription_id.toString(),
-            update_url: paddleUser.update_url,
-            cancel_url: paddleUser.cancel_url,
+        if (!matchingUser.subscription.external.stripe) {
+          matchingUser.subscription.external.stripe = {
+            user_id: subscription.customer.id,
+            subscription_id: subscription.id,
           };
         }
 
-        matchingUser.subscription.isMonthly = paddleUser.plan_id === PADDLE_MONTHLY_PLAN_ID;
+        matchingUser.subscription.isMonthly = subscription.items.data.some((item) => item.price.id.includes('monthly'));
         matchingUser.subscription.updated_at = new Date().toISOString();
-        matchingUser.subscription.expires_at = new Date(paddleUser.next_payment.date).toISOString();
+        matchingUser.subscription.expires_at = new Date(subscription.current_period_end * 1000).toISOString();
 
-        if (['active', 'paused'].includes(paddleUser.state)) {
+        if (['active', 'paused'].includes(subscription.status)) {
           matchingUser.status = 'active';
-        } else if (paddleUser.state === 'trialing') {
+        } else if (subscription.status === 'trialing') {
           matchingUser.status = 'trial';
         } else {
           matchingUser.status = 'inactive';
@@ -46,6 +49,35 @@ async function checkSubscriptions() {
         ++updatedUsers;
       }
     }
+
+    // const paypalSubscriptions = await getPaypalSubscriptions();
+
+    // for (const subscription of paypalSubscriptions) {
+    //   const matchingUser = users.find((user) => user.email === subscription.subscriber.email_address);
+
+    //   if (matchingUser) {
+    //     if (!matchingUser.subscription.external.paypal) {
+    //       matchingUser.subscription.external.paypal = {
+    //         user_id: subscription.subscriber.payer_id,
+    //         subscription_id: subscription.id,
+    //       };
+    //     }
+
+    //     matchingUser.subscription.isMonthly = parseInt(subscription.billing_info.last_payment.amount.value, 10) < 10;
+    //     matchingUser.subscription.updated_at = new Date().toISOString();
+    //     matchingUser.subscription.expires_at = new Date(subscription.billing_info.next_billing_time).toISOString();
+
+    //     if (['ACTIVE', 'APPROVED'].includes(subscription.status)) {
+    //       matchingUser.status = 'active';
+    //     } else {
+    //       matchingUser.status = 'inactive';
+    //     }
+
+    //     await updateUser(matchingUser);
+
+    //     ++updatedUsers;
+    //   }
+    // }
 
     console.log('Updated', updatedUsers, 'users');
   } catch (error) {

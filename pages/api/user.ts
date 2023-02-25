@@ -13,7 +13,7 @@ import {
 } from '/lib/data-utils.ts';
 import { EncryptedData } from '/lib/types.ts';
 import {
-  sendUpdateEmailInPaddleEmail,
+  sendUpdateEmailInProviderEmail,
   sendVerifyDeleteAccountEmail,
   sendVerifyUpdateEmailEmail,
   sendVerifyUpdatePasswordEmail,
@@ -100,8 +100,8 @@ async function updateUserAction(request: Request) {
 
     await updateUser(user);
 
-    if (email && user.subscription.external.paddle?.user_id && email !== oldEmail) {
-      await sendUpdateEmailInPaddleEmail(oldEmail, email);
+    if (email && (user.subscription.external.stripe || user.subscription.external.paypal) && email !== oldEmail) {
+      await sendUpdateEmailInProviderEmail(oldEmail, email);
     }
   }
 
