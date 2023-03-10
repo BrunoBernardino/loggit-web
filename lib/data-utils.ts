@@ -25,7 +25,7 @@ export async function getUserById(id: string) {
 }
 
 export async function createUser(email: User['email'], encryptedKeyPair: User['encrypted_key_pair']) {
-  const trialDays = 14;
+  const trialDays = 30;
   const now = new Date();
   const trialEndDate = new Date(new Date().setUTCDate(new Date().getUTCDate() + trialDays));
 

@@ -16,7 +16,7 @@ It's not compatible with Loggit v2 ([end-to-end encrypted via Userbase](https://
 
 Or check the [Development section below](#development).
 
-> **NOTE:** You don't need to have emails (Postmark) and subscriptions (Paddle) setup to have the app work. Those are only used for allowing others to automatically manage their account. You can simply make any `user.status = 'active'` and `user.subscription.expires_at = new Date('2100-01-01')` to "never" expire, in the database, directly.
+> **NOTE:** You don't need to have emails (Postmark) and subscriptions (Stripe/PayPal) setup to have the app work. Those are only used for allowing others to automatically manage their account. You can simply make any `user.status = 'active'` and `user.subscription.expires_at = new Date('2100-01-01')` to "never" expire, in the database, directly.
 
 ## Framework-less
 

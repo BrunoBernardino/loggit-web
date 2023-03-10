@@ -25,10 +25,20 @@
   }
 }
 
-.paddle-frame-inline {
-  background: rgba(0, 0, 0, 0.8) !important;
-}
+.swal2-html-container {
+  .text {
+    color: #aaa;
+  }
 
-.swal2-html-container .text {
-  color: #aaa;
+  .input-wrapper > label {
+    color: #999;
+  }
+
+  .input-wrapper input[type="text"], .input-wrapper input[type="date"], .input-wrapper input[type="datetime"], .input-wrapper input[type="email"], .input-wrapper input[type="number"], .input-wrapper input[type="search"], .input-wrapper input[type="time"], .input-wrapper input[type="url"], .input-wrapper input[type="password"], .input-wrapper textarea, .input-wrapper select {
+    border-color: #ddd;
+
+    &:focus {
+      border-color: #aaa;
+    }
+  }
 }

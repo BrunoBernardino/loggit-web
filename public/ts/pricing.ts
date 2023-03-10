@@ -47,26 +47,27 @@ document.addEventListener('app-loaded', async () => {
 
     const { Swal } = window;
 
-    const { value: provider } = await Swal.fire({
+    const stripeOrPayPalDialogResult = await Swal.fire({
+      icon: 'question',
+      title: 'Stripe or PayPal?',
       text: 'Do you prefer paying via Stripe or PayPal?',
       focusConfirm: false,
-      allowEscapeKey: true,
-      buttons: {
-        paypal: {
-          text: 'PayPal',
-          value: 'paypal',
-        },
-        stripe: {
-          text: 'Stripe',
-          value: 'stripe',
-        },
-      },
+      showCancelButton: true,
+      showDenyButton: true,
+      confirmButtonText: 'Stripe',
+      denyButtonText: 'PayPal',
+      cancelButtonText: 'Wait, cancel.',
     });
 
-    if (provider === 'paypal') {
-      window.location.href = window.app.PAYPAL_MONTHLY_URL;
-    } else if (provider) {
-      window.location.href = window.app.STRIPE_MONTHLY_URL;
+    if (
+      stripeOrPayPalDialogResult.isConfirmed ||
+      stripeOrPayPalDialogResult.isDenied
+    ) {
+      if (stripeOrPayPalDialogResult.isDenied) {
+        window.location.href = window.app.PAYPAL_MONTHLY_URL;
+      } else {
+        window.location.href = window.app.STRIPE_MONTHLY_URL;
+      }
     }
   }
 
@@ -83,26 +84,27 @@ document.addEventListener('app-loaded', async () => {
 
     const { Swal } = window;
 
-    const { value: provider } = await Swal.fire({
+    const stripeOrPayPalDialogResult = await Swal.fire({
+      icon: 'question',
+      title: 'Stripe or PayPal?',
       text: 'Do you prefer paying via Stripe or PayPal?',
       focusConfirm: false,
-      allowEscapeKey: true,
-      buttons: {
-        paypal: {
-          text: 'PayPal',
-          value: 'paypal',
-        },
-        stripe: {
-          text: 'Stripe',
-          value: 'stripe',
-        },
-      },
+      showCancelButton: true,
+      showDenyButton: true,
+      confirmButtonText: 'Stripe',
+      denyButtonText: 'PayPal',
+      cancelButtonText: 'Wait, cancel.',
     });
 
-    if (provider === 'paypal') {
-      window.location.href = window.app.PAYPAL_YEARLY_URL;
-    } else if (provider) {
-      window.location.href = window.app.STRIPE_YEARLY_URL;
+    if (
+      stripeOrPayPalDialogResult.isConfirmed ||
+      stripeOrPayPalDialogResult.isDenied
+    ) {
+      if (stripeOrPayPalDialogResult.isDenied) {
+        window.location.href = window.app.PAYPAL_YEARLY_URL;
+      } else {
+        window.location.href = window.app.STRIPE_YEARLY_URL;
+      }
     }
   }
 
