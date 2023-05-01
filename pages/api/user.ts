@@ -18,11 +18,16 @@ import {
   sendVerifyUpdateEmailEmail,
   sendVerifyUpdatePasswordEmail,
 } from '/lib/providers/postmark.ts';
+import { validateEmail } from '/public/ts/utils.ts';
 
 async function createUserAction(request: Request) {
   const { email, encrypted_key_pair }: { email: string; encrypted_key_pair: EncryptedData } = await request.json();
 
   if (!email || !encrypted_key_pair) {
+    return new Response('Bad Request', { status: 400 });
+  }
+
+  if (!validateEmail(email)) {
     return new Response('Bad Request', { status: 400 });
   }
 

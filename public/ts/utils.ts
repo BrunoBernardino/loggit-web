@@ -668,3 +668,15 @@ export function sortByCount(
   }
   return 0;
 }
+
+export function validateEmail(email: string) {
+  const trimmedEmail = (email || '').trim().toLocaleLowerCase();
+  if (!trimmedEmail) {
+    return false;
+  }
+
+  const requiredCharsNotInEdges = ['@', '.'];
+  return requiredCharsNotInEdges.every((char) =>
+    trimmedEmail.includes(char) && !trimmedEmail.startsWith(char) && !trimmedEmail.endsWith(char)
+  );
+}
