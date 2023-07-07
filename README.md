@@ -8,6 +8,8 @@ This is v3, which is [end-to-end encrypted with open Web Standards](https://en.w
 
 It's not compatible with Loggit v2 ([end-to-end encrypted via Userbase](https://userbase.com)) which you can still get locally from [this commit](https://github.com/BrunoBernardino/loggit-web/tree/39df07c17dff608654deea5e9047e28a782b0cd2), nor v1 (not end-to-end encrypted), which you can still get locally from [this commit](https://github.com/BrunoBernardino/loggit-web/tree/84052355f46472998b8b60975304d69740513f21). You can still export and import the data as the JSON format is the same across all 3 versions (unencrypted).
 
+> **NOTE:** If your Android launcher doesn't show PWAs as an app, I've got a solution for you: [a simple webview app](https://github.com/BrunoBernardino/loggit-android-webview).
+
 ## Self-host it!
 
 [![Deploy to DigitalOcean](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/BrunoBernardino/loggit-web)
