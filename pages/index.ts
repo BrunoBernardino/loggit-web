@@ -110,7 +110,6 @@ export function pageContent() {
               <input
                 id="event-name"
                 placeholder="Volunteering"
-                autocomplete="off"
                 type="text"
               />
             </fieldset>
@@ -120,7 +119,6 @@ export function pageContent() {
               <input
                 id="event-date"
                 placeholder="Today"
-                autocomplete="off"
                 type="date"
               />
             </fieldset>
@@ -167,7 +165,6 @@ export function pageContent() {
             <input
               id="edit-event-name"
               placeholder="Volunteering"
-              autocomplete="off"
               type="text"
             />
           </fieldset>
@@ -177,7 +174,6 @@ export function pageContent() {
             <input
               id="edit-event-date"
               placeholder="Today"
-              autocomplete="off"
               type="date"
             />
           </fieldset>

@@ -1,5 +1,5 @@
 
-FROM denoland/deno:1.30.3
+FROM denoland/deno:1.34.1
 
 EXPOSE 8000
 
@@ -14,4 +14,4 @@ ADD . /app
 # Compile the main app so that it doesn't need to be compiled each startup/entry.
 RUN deno cache --reload main.ts
 
-CMD ["make", "start"]
+CMD ["run", "--allow-all", "main.ts"]
