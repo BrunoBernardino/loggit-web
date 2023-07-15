@@ -109,7 +109,7 @@ document.addEventListener('app-loaded', async () => {
     return clonedEvent;
   }
 
-  function getTopEventItemHtmlElement(event: Pick<Event, 'id' | 'name'>) {
+  function getTopEventItemHtmlElement(event: Pick<Event, 'id' | 'name'> & { lastDate: string }) {
     const template = document.getElementById('top-event-item') as HTMLTemplateElement;
 
     // Clone the event template and add it to the list
@@ -118,6 +118,18 @@ document.addEventListener('app-loaded', async () => {
 
     const nameElement = clonedEvent.querySelector('article span') as HTMLSpanElement;
     nameElement.textContent = event.name;
+
+    const displayOptions: ShowFormattedDateOptions = {};
+
+    const lastDateYear = parseInt(event.lastDate.substring(0, 4), 10);
+    const currentYear = new Date().getFullYear();
+
+    if (lastDateYear !== currentYear) {
+      displayOptions.showYear = true;
+    }
+
+    const dateElement = clonedEvent.querySelector('time') as HTMLTimeElement;
+    dateElement.textContent = showFormattedDate(event.lastDate, displayOptions);
 
     return clonedEvent;
   }
@@ -135,17 +147,25 @@ document.addEventListener('app-loaded', async () => {
     const frequencyElement = clonedEvent.querySelector('span.frequency') as HTMLSpanElement;
     frequencyElement.textContent = eventStat.frequency;
 
-    const displayOptions: ShowFormattedDateOptions = {};
+    return clonedEvent;
+  }
 
-    const lastDateYear = parseInt(eventStat.lastDate.substring(0, 4), 10);
+  function getEventStatEventHtmlElement(event: Pick<Event, 'date'>) {
+    const clonedEvent = document.createElement('time');
+
+    const displayOptions: ShowFormattedDateOptions = {
+      longMonth: true,
+    };
+
+    const dateYear = parseInt(event.date.substring(0, 4), 10);
     const currentYear = new Date().getFullYear();
 
-    if (lastDateYear !== currentYear) {
+    if (dateYear !== currentYear) {
       displayOptions.showYear = true;
+      displayOptions.longYear = true;
     }
 
-    const dateElement = clonedEvent.querySelector('time') as HTMLTimeElement;
-    dateElement.textContent = showFormattedDate(eventStat.lastDate, displayOptions);
+    clonedEvent.textContent = showFormattedDate(event.date, displayOptions);
 
     return clonedEvent;
   }
@@ -187,20 +207,19 @@ document.addEventListener('app-loaded', async () => {
       }
     });
 
-    // Sort events by count, and truncate at maxTopEventCount
-    const maxTopEventCount = 15;
+    // Sort events by count
     const topEvents = [...eventCountByName.keys()]
       .map((eventName) => ({
         id: `fake-id`,
         name: eventName,
         count: eventCountByName.get(eventName)!.count,
         date: '',
+        lastDate: eventCountByName.get(eventName)!.lastLog,
       }))
-      .sort(sortByCount)
-      .slice(0, maxTopEventCount);
+      .sort(sortByCount);
 
     // Sort and truncate again, but now for stats
-    const maxTopEventStatsCount = 10;
+    const maxTopEventStatsCount = 15;
     const eventStats = [...eventCountByName.keys()]
       .map((eventName) => ({
         id: `fake-id`,
@@ -230,6 +249,10 @@ document.addEventListener('app-loaded', async () => {
     eventStatsList.replaceChildren();
     for (const eventStat of eventStats) {
       const eventElement = getEventStatHtmlElement(eventStat);
+
+      const events = allEvents.filter((event) => event.name === eventStat.name);
+
+      eventElement.addEventListener('click', () => showEventStatModal(eventStat, events));
 
       eventStatsList.appendChild(eventElement);
     }
@@ -411,6 +434,26 @@ document.addEventListener('app-loaded', async () => {
       willOpen: () => {
         (document.getElementById('edit-event-name') as HTMLInputElement).value = event.name;
         (document.getElementById('edit-event-date') as HTMLInputElement).value = event.date;
+      },
+    });
+  }
+
+  async function showEventStatModal(eventStat: EventStat, events: Event[]) {
+    const { Swal } = window;
+
+    await Swal.fire({
+      template: '#event-stat-modal',
+      focusConfirm: false,
+      allowEscapeKey: true,
+      willOpen: () => {
+        const eventElements = events.map((event) => getEventStatEventHtmlElement(event));
+
+        (document.getElementById('event-stat-name') as HTMLHeadingElement).innerText = eventStat.name;
+        (document.getElementById('event-stat-frequency') as HTMLHeadingElement).innerText = eventStat.frequency;
+        const eventStatEvents = document.getElementById('event-stat-events') as HTMLDivElement;
+
+        eventStatEvents.innerText = '';
+        eventElements.forEach((eventElement) => eventStatEvents.appendChild(eventElement));
       },
     });
   }

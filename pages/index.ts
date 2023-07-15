@@ -71,7 +71,7 @@ export function pageContent() {
           <div class="panels">
             <section class="event-stats-wrapper">
               <span class="text">
-                Below you can see some stats for your top 10 logged events, and the date they were last logged.
+                Below you can see some stats for your top 15 logged events.<br />Tap on one to learn more.
               </span>
               <section id="event-stats">
               
@@ -94,7 +94,7 @@ export function pageContent() {
 
         <section id="add-event">
           <span class="text">
-            Tap on a frequent event below to quickly add it for today.
+            Tap on an event below to quickly add it for today.
           </span>
 
           <section id="top-events">
@@ -142,6 +142,7 @@ export function pageContent() {
       <section class="event-item top" data-event-name="{event.name}">
         <article>
           <span>{event.name}</span>
+          <time title="last added on">{event.lastDate}</time>
         </article>
       </section>
     </template>
@@ -150,7 +151,6 @@ export function pageContent() {
       <section class="event-item stat" data-id="{event.id}">
         <span class="name">{event.name}</span>
         <span class="frequency">{event.frequency}</span>
-        <time>{event.lastDate}</time>
       </section>
     </template>
 
@@ -187,6 +187,26 @@ export function pageContent() {
       </swal-button>
       <swal-button type="deny">
         Delete
+      </swal-button>
+    </template>
+
+    <template id="event-stat-modal">
+      <swal-title>
+        Event details
+      </swal-title>
+      <swal-html>
+        <h3 id="event-stat-name">
+          {eventStat.name}
+        </h3>
+        <h4 id="event-stat-frequency">
+          {eventStat.frequency}
+        </h4>
+        <section id="event-stat-events">
+          <time>{event.date}</time>
+        </section>
+      </swal-html>
+      <swal-button type="confirm">
+        Close
       </swal-button>
     </template>
 
