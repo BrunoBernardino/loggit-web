@@ -1,4 +1,4 @@
-import { assertEquals, assertNotEquals } from 'std/testing/asserts.ts';
+import { assertEquals, assertNotEquals } from 'std/assert/mod.ts';
 import { KeyPair } from '/lib/types.ts';
 import Encryption from './encryption.ts';
 

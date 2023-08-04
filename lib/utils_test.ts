@@ -1,4 +1,4 @@
-import { assertEquals } from 'std/testing/asserts.ts';
+import { assertEquals } from 'std/assert/assert_equals.ts';
 import { escapeHtml, generateRandomCode, splitArrayInChunks } from './utils.ts';
 
 Deno.test('that escapeHtml works', () => {
