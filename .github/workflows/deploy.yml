@@ -10,7 +10,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: https://gitea.com/actions/checkout@v3
+      - uses: actions/checkout@v3
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
