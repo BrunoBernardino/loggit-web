@@ -23,21 +23,23 @@ import { validateEmail } from '/public/ts/utils.ts';
 async function createUserAction(request: Request) {
   const { email, encrypted_key_pair }: { email: string; encrypted_key_pair: EncryptedData } = await request.json();
 
-  if (!email || !encrypted_key_pair) {
+  const lowercaseEmail = (email || '').toLocaleLowerCase().trim();
+
+  if (!lowercaseEmail || !encrypted_key_pair) {
     return new Response('Bad Request', { status: 400 });
   }
 
-  if (!validateEmail(email)) {
+  if (!validateEmail(lowercaseEmail)) {
     return new Response('Bad Request', { status: 400 });
   }
 
-  const existingUserByEmail = await getUserByEmail(email);
+  const existingUserByEmail = await getUserByEmail(lowercaseEmail);
 
   if (existingUserByEmail) {
     return new Response('Bad Request', { status: 400 });
   }
 
-  const user = await createUser(email, encrypted_key_pair);
+  const user = await createUser(lowercaseEmail, encrypted_key_pair);
 
   if (!user) {
     return new Response('Bad Request', { status: 400 });
@@ -67,15 +69,17 @@ async function updateUserAction(request: Request) {
     return new Response('Bad Request', { status: 400 });
   }
 
-  if (!email && !encrypted_key_pair) {
+  const lowercaseEmail = (email || '').toLocaleLowerCase().trim();
+
+  if (!lowercaseEmail && !encrypted_key_pair) {
     return new Response('Bad Request', { status: 400 });
   }
 
   const { user, session } = await validateUserAndSession(user_id, session_id);
 
   if (!code) {
-    if (email) {
-      const existingUserByEmail = await getUserByEmail(email);
+    if (lowercaseEmail) {
+      const existingUserByEmail = await getUserByEmail(lowercaseEmail);
 
       if (existingUserByEmail) {
         return new Response('Bad Request', { status: 400 });
@@ -84,7 +88,7 @@ async function updateUserAction(request: Request) {
 
     const verificationCode = await createVerificationCode(user, session, 'user-update');
 
-    if (email) {
+    if (lowercaseEmail) {
       await sendVerifyUpdateEmailEmail(user.email, verificationCode);
     }
     if (encrypted_key_pair) {
@@ -95,8 +99,8 @@ async function updateUserAction(request: Request) {
 
     const oldEmail = user.email;
 
-    if (email) {
-      user.email = email;
+    if (lowercaseEmail) {
+      user.email = lowercaseEmail;
     }
 
     if (encrypted_key_pair) {
@@ -105,8 +109,11 @@ async function updateUserAction(request: Request) {
 
     await updateUser(user);
 
-    if (email && (user.subscription.external.stripe || user.subscription.external.paypal) && email !== oldEmail) {
-      await sendUpdateEmailInProviderEmail(oldEmail, email);
+    if (
+      lowercaseEmail && (user.subscription.external.stripe || user.subscription.external.paypal) &&
+      lowercaseEmail !== oldEmail
+    ) {
+      await sendUpdateEmailInProviderEmail(oldEmail, lowercaseEmail);
     }
   }
 
