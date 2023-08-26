@@ -170,8 +170,10 @@ export async function validateLogin(email: string, password: string) {
 
     const passwordKey = await Encryption.getAuthKey(password);
 
+    const lowercaseEmail = (email || '').toLocaleLowerCase().trim();
+
     const body: { email: string } = {
-      email,
+      email: lowercaseEmail,
     };
 
     const response = await fetch('/api/session', { method: 'POST', headers, body: JSON.stringify(body) });
@@ -229,7 +231,7 @@ export async function validateLogin(email: string, password: string) {
     const session: StoredSession = {
       sessionId,
       userId: user.id,
-      email,
+      email: lowercaseEmail,
       keyPair,
     };
 
@@ -255,8 +257,10 @@ export async function createAccount(email: string, password: string) {
     const keyPair = await Encryption.generateKeyPair();
     const encryptedKeyPair = await Encryption.encrypt(JSON.stringify(keyPair), passwordKey);
 
+    const lowercaseEmail = (email || '').toLocaleLowerCase().trim();
+
     const body: { email: string; encrypted_key_pair: string } = {
-      email,
+      email: lowercaseEmail,
       encrypted_key_pair: encryptedKeyPair,
     };
 
@@ -270,7 +274,7 @@ export async function createAccount(email: string, password: string) {
     const session: StoredSession = {
       sessionId,
       userId: user.id,
-      email,
+      email: lowercaseEmail,
       keyPair,
     };
 
