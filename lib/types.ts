@@ -25,7 +25,9 @@ export interface User {
     updated_at: string;
   };
   status: 'trial' | 'active' | 'inactive';
-  extra: Record<never, never>; // NOTE: Here for potential future fields
+  extra: {
+    show_current_month_stats_in_top_stats?: boolean;
+  };
   created_at: Date;
 }
 

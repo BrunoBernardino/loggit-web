@@ -13,6 +13,26 @@ export function pageContent() {
         <p>Before you can change your settings, you need to <a href="/">Signup or Login</a> first.</p>
       </section>
       <section class="hidden" data-has-valid-session>
+        <h2>Change displayed top event frequency</h2>
+        <p>Change what frequency you see in your top events.</p>
+        <form id="change-frequency-form">
+          <fieldset class="input-wrapper">
+            <label for="new-frequency">Frequency</label>
+            <select
+              id="new-frequency"
+              placeholder="per year"
+              name="new-frequency"
+            >
+            <option value="false">Lifetime / Per Year (1x / year, 2x / month)</option>
+            <option value="true">Current Month (1x, 3x / week)</option>
+          </select>
+          </fieldset>
+          <button type="submit" id="change-frequency-button">
+            Change frequency
+          </button>
+        </form>
+      </section>
+      <section class="hidden" data-has-valid-session style="margin-top: 2rem;">
         <h2>Import/Export data</h2>
         <p>
           You can import a JSON file exported from Loggit (v1, v2, or v3) before. <a href="https://loggit.net/import-export-file-format">Learn more about the file format</a>.

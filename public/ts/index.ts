@@ -1,5 +1,6 @@
 import { Event } from '/lib/types.ts';
 import {
+  calculateCurrentMonthFrequencyFromGrouppedEvent,
   calculateFrequencyFromGrouppedEvent,
   checkForValidSession,
   createAccount,
@@ -19,11 +20,12 @@ interface EventStat {
   name: string;
   count: number;
   frequency: string;
+  currentMonthFrequency: string;
   lastDate: string;
 }
 
 document.addEventListener('app-loaded', async () => {
-  await checkForValidSession();
+  const user = await checkForValidSession();
 
   const loginForm = document.getElementById('login-form') as HTMLFormElement;
   const emailInput = document.getElementById('email') as HTMLInputElement;
@@ -145,7 +147,12 @@ document.addEventListener('app-loaded', async () => {
     nameElement.textContent = eventStat.name;
 
     const frequencyElement = clonedEvent.querySelector('span.frequency') as HTMLSpanElement;
-    frequencyElement.textContent = eventStat.frequency;
+    frequencyElement.textContent = user?.extra.show_current_month_stats_in_top_stats
+      ? eventStat.currentMonthFrequency
+      : eventStat.frequency;
+    frequencyElement.title = user?.extra.show_current_month_stats_in_top_stats
+      ? eventStat.frequency
+      : `${eventStat.currentMonthFrequency} this month`;
 
     return clonedEvent;
   }
@@ -183,8 +190,9 @@ document.addEventListener('app-loaded', async () => {
 
     // Calculate top events
     const eventCountByName: Map<string, { count: number; firstLog: string; lastLog: string }> = new Map();
+    const currentMonthEventCountByName: Map<string, { count: number; firstLog: string; lastLog: string }> = new Map();
 
-    // Group events by name, and count them
+    // Group events by name, and count them (total)
     allEvents.forEach((event) => {
       if (eventCountByName.has(event.name)) {
         const eventCount = eventCountByName.get(event.name)!;
@@ -200,6 +208,29 @@ document.addEventListener('app-loaded', async () => {
         eventCountByName.set(event.name, eventCount);
       } else {
         eventCountByName.set(event.name, {
+          count: 1,
+          firstLog: event.date,
+          lastLog: event.date,
+        });
+      }
+    });
+
+    // Group events by name, and count them (current month)
+    (allEvents.filter((event) => event.date.startsWith(currentMonth))).forEach((event) => {
+      if (currentMonthEventCountByName.has(event.name)) {
+        const eventCount = currentMonthEventCountByName.get(event.name)!;
+
+        eventCount.count += 1;
+        if (event.date < eventCount.firstLog) {
+          eventCount.firstLog = event.date;
+        }
+        if (event.date > eventCount.lastLog) {
+          eventCount.lastLog = event.date;
+        }
+
+        currentMonthEventCountByName.set(event.name, eventCount);
+      } else {
+        currentMonthEventCountByName.set(event.name, {
           count: 1,
           firstLog: event.date,
           lastLog: event.date,
@@ -226,6 +257,11 @@ document.addEventListener('app-loaded', async () => {
         name: eventName,
         count: eventCountByName.get(eventName)!.count,
         frequency: calculateFrequencyFromGrouppedEvent(eventCountByName.get(eventName)!),
+        currentMonthFrequency: currentMonthEventCountByName.get(eventName)
+          ? calculateCurrentMonthFrequencyFromGrouppedEvent(
+            currentMonthEventCountByName.get(eventName)!,
+          )
+          : '0x',
         lastDate: eventCountByName.get(eventName)!.lastLog,
       }))
       .sort(sortByCount)
@@ -450,6 +486,8 @@ document.addEventListener('app-loaded', async () => {
 
         (document.getElementById('event-stat-name') as HTMLHeadingElement).innerText = eventStat.name;
         (document.getElementById('event-stat-frequency') as HTMLHeadingElement).innerText = eventStat.frequency;
+        (document.getElementById('event-stat-current-frequency') as HTMLHeadingElement).innerText =
+          `${eventStat.currentMonthFrequency} this month`;
         const eventStatEvents = document.getElementById('event-stat-events') as HTMLDivElement;
 
         eventStatEvents.innerText = '';

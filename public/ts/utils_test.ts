@@ -1,5 +1,10 @@
 import { assertEquals } from 'std/assert/assert_equals.ts';
-import { calculateFrequencyFromGrouppedEvent, dateDiffInDays, validateEmail } from './utils.ts';
+import {
+  calculateCurrentMonthFrequencyFromGrouppedEvent,
+  calculateFrequencyFromGrouppedEvent,
+  dateDiffInDays,
+  validateEmail,
+} from './utils.ts';
 
 Deno.test('that dateDiffInDays works', () => {
   const tests = [
@@ -148,5 +153,97 @@ Deno.test('that validateEmail works', () => {
   for (const test of tests) {
     const result = validateEmail(test.email);
     assertEquals(result, test.expected);
+  }
+});
+
+Deno.test('that calculateCurrentMonthFrequencyFromGrouppedEvent works', () => {
+  const tests = [
+    {
+      input: {
+        count: 12,
+        firstLog: '2022-01-01',
+        lastLog: '2022-01-31',
+      },
+      expected: '3x / week',
+    },
+    {
+      input: {
+        count: 16,
+        firstLog: '2022-01-01',
+        lastLog: '2022-01-31',
+      },
+      expected: '4x / week',
+    },
+    {
+      input: {
+        count: 18,
+        firstLog: '2022-01-01',
+        lastLog: '2022-01-31',
+      },
+      expected: '5x / week',
+    },
+    {
+      input: {
+        count: 30,
+        firstLog: '2022-01-01',
+        lastLog: '2022-01-31',
+      },
+      expected: '1x / day',
+    },
+    {
+      input: {
+        count: 2,
+        firstLog: '2022-01-01',
+        lastLog: '2022-01-31',
+      },
+      expected: '2x',
+    },
+    {
+      input: {
+        count: 4,
+        firstLog: '2022-01-01',
+        lastLog: '2022-01-31',
+      },
+      expected: '1x / week',
+    },
+    {
+      input: {
+        count: 4,
+        firstLog: '2022-01-01',
+        lastLog: '2022-01-05',
+      },
+      expected: '4x',
+    },
+    {
+      input: {
+        count: 1,
+        firstLog: '2022-01-01',
+        lastLog: '2022-01-30',
+      },
+      expected: '1x',
+    },
+    {
+      input: {
+        count: 1,
+        firstLog: '2022-01-01',
+        lastLog: '2022-01-01',
+      },
+      expected: '1x',
+    },
+    {
+      input: {
+        count: 6,
+        firstLog: '2022-01-01',
+        lastLog: '2022-01-09',
+      },
+      expected: '6x',
+    },
+  ];
+
+  for (const test of tests) {
+    const output = calculateCurrentMonthFrequencyFromGrouppedEvent(
+      test.input,
+    );
+    assertEquals(output, test.expected);
   }
 });

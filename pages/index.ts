@@ -201,6 +201,9 @@ export function pageContent() {
         <h4 id="event-stat-frequency">
           {eventStat.frequency}
         </h4>
+        <h4 id="event-stat-current-frequency" title="Current month">
+          {eventStat.currentMonthFrequency}
+        </h4>
         <section id="event-stat-events">
           <time>{event.date}</time>
         </section>

@@ -59,10 +59,11 @@ async function createUserAction(request: Request) {
 }
 
 async function updateUserAction(request: Request) {
-  const { user_id, session_id, email, encrypted_key_pair, code }: {
+  const { user_id, session_id, email, show_current_month_stats_in_top_stats, encrypted_key_pair, code }: {
     user_id: string;
     session_id: string;
     email?: string;
+    show_current_month_stats_in_top_stats?: boolean;
     encrypted_key_pair?: EncryptedData;
     code?: string;
   } = await request.json();
@@ -73,14 +74,18 @@ async function updateUserAction(request: Request) {
 
   const lowercaseEmail = (email || '').toLocaleLowerCase().trim();
 
-  if (!lowercaseEmail && !encrypted_key_pair) {
+  if (!lowercaseEmail && !encrypted_key_pair && typeof show_current_month_stats_in_top_stats === 'undefined') {
     return new Response('Bad Request', { status: 400 });
   }
 
   const { user, session } = await validateUserAndSession(user_id, session_id);
 
   if (!code) {
-    if (lowercaseEmail) {
+    if (typeof show_current_month_stats_in_top_stats !== 'undefined') {
+      user.extra.show_current_month_stats_in_top_stats = show_current_month_stats_in_top_stats;
+
+      await updateUser(user);
+    } else if (lowercaseEmail) {
       const existingUserByEmail = await getUserByEmail(lowercaseEmail);
 
       if (existingUserByEmail) {

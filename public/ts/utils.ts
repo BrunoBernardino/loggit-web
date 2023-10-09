@@ -655,6 +655,42 @@ export function calculateFrequencyFromGrouppedEvent(groupedEvent: GroupedEvent) 
   return `${frequencyNumberPerDay}x / day`;
 }
 
+export function calculateCurrentMonthFrequencyFromGrouppedEvent(groupedEvent: GroupedEvent) {
+  const weekDifference = Math.round(
+    Math.abs(dateDiffInDays(new Date(groupedEvent.firstLog), new Date(groupedEvent.lastLog)) / 7),
+  );
+
+  // This event has only existed for less than 2 weeks, so we can't know if it'll repeat any more
+  if (groupedEvent.count < 4 || weekDifference <= 2) {
+    return `${groupedEvent.count || 1}x`;
+  }
+
+  const frequencyNumberPerWeek = Math.round(
+    groupedEvent.count / weekDifference,
+  );
+
+  // When potentially less than once per week, check frequency in the month
+  if (frequencyNumberPerWeek <= 1) {
+    const frequencyNumberInMonth = Math.round(
+      (groupedEvent.count / weekDifference) * 4,
+    );
+
+    if (frequencyNumberInMonth < 4) {
+      return `${frequencyNumberInMonth || 1}x`;
+    }
+  }
+
+  if (frequencyNumberPerWeek < 7) {
+    return `${frequencyNumberPerWeek}x / week`;
+  }
+
+  const frequencyNumberPerDay = Math.round(
+    groupedEvent.count / weekDifference / 7,
+  );
+
+  return `${frequencyNumberPerDay}x / day`;
+}
+
 type SortableByCount = { count: number };
 export function sortByCount(
   objectA: SortableByCount,

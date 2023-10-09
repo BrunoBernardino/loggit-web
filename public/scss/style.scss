@@ -108,7 +108,11 @@
   }
 }
 
-#event-stat-frequency {
+#event-stat-frequency, #event-stat-current-frequency {
+  color: #666;
+}
+
+#event-stat-current-frequency {
   color: #666;
   margin-bottom: 1rem;
 }

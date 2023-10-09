@@ -6,6 +6,10 @@ import Encryption from './encryption.ts';
 document.addEventListener('app-loaded', async () => {
   const user = await checkForValidSession();
 
+  const changeFrequencyForm = document.getElementById('change-frequency-form') as HTMLFormElement;
+  const newFrequencySelect = document.getElementById('new-frequency') as HTMLSelectElement;
+  const changeFrequencyButton = document.getElementById('change-frequency-button') as HTMLButtonElement;
+
   const importDataButton = document.getElementById('import-button') as HTMLButtonElement;
   const exportDataButton = document.getElementById('export-button') as HTMLButtonElement;
 
@@ -18,6 +22,52 @@ document.addEventListener('app-loaded', async () => {
   const changePasswordButton = document.getElementById('change-password-button') as HTMLButtonElement;
 
   let isUpdating = false;
+
+  async function changeFrequency(event: MouseEvent | SubmitEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (isUpdating) {
+      return;
+    }
+
+    if (!user) {
+      showNotification('You need to signup or login before changing your settings!', 'error');
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      window.location.href = '/';
+      return;
+    }
+
+    isUpdating = true;
+    window.app.showLoading();
+    changeFrequencyButton.textContent = 'Changing...';
+
+    const show_current_month_stats_in_top_stats = newFrequencySelect.value === 'true';
+
+    try {
+      window.app.showLoading();
+
+      const headers = commonRequestHeaders;
+
+      const session = LocalData.get('session')!;
+
+      const body: { user_id: string; session_id: string; show_current_month_stats_in_top_stats: boolean } = {
+        user_id: session.userId,
+        session_id: session.sessionId,
+        show_current_month_stats_in_top_stats,
+      };
+
+      await fetch('/api/user', { method: 'PATCH', headers, body: JSON.stringify(body) });
+
+      showNotification('Frequency changed successfully!');
+    } catch (error) {
+      showNotification(error, 'error');
+    }
+
+    isUpdating = false;
+    window.app.hideLoading();
+    changeFrequencyButton.textContent = 'Change frequency';
+  }
 
   async function importDataFile() {
     const { Swal } = window;
@@ -307,12 +357,14 @@ document.addEventListener('app-loaded', async () => {
   }
 
   function initializePage() {
-    // Do nothing
+    newFrequencySelect.value = user?.extra.show_current_month_stats_in_top_stats ? 'true' : 'false';
   }
 
   if (window.app.isLoggedIn) {
     initializePage();
   }
+
+  changeFrequencyForm.addEventListener('submit', changeFrequency);
 
   importDataButton.addEventListener('click', importDataFile);
   exportDataButton.addEventListener('click', exportData);
