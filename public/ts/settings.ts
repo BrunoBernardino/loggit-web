@@ -1,5 +1,12 @@
 import { Event } from '/lib/types.ts';
-import { checkForValidSession, commonRequestHeaders, exportAllData, importData, showNotification } from './utils.ts';
+import {
+  checkForValidSession,
+  commonInitializer,
+  commonRequestHeaders,
+  exportAllData,
+  importData,
+  showNotification,
+} from './utils.ts';
 import LocalData from './local-data.ts';
 import Encryption from './encryption.ts';
 
@@ -358,6 +365,7 @@ document.addEventListener('app-loaded', async () => {
 
   function initializePage() {
     newFrequencySelect.value = user?.extra.show_current_month_stats_in_top_stats ? 'true' : 'false';
+    commonInitializer();
   }
 
   if (window.app.isLoggedIn) {
