@@ -3,6 +3,7 @@ import {
   calculateCurrentMonthFrequencyFromGrouppedEvent,
   calculateFrequencyFromGrouppedEvent,
   checkForValidSession,
+  commonInitializer,
   createAccount,
   deleteEvent,
   fetchEvents,
@@ -340,6 +341,7 @@ document.addEventListener('app-loaded', async () => {
 
   function initializePage() {
     showData();
+    commonInitializer();
   }
 
   let isAddingEvent = false;
