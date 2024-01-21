@@ -834,11 +834,13 @@ export function sortByEmail(
   objectA: SortableByEmail,
   objectB: SortableByEmail,
 ) {
-  if (objectA.email < objectB.email) {
-    return 1;
-  }
-  if (objectA.email > objectB.email) {
+  const emailA = objectA.email.toLowerCase();
+  const emailB = objectB.email.toLowerCase();
+  if (emailA < emailB) {
     return -1;
+  }
+  if (emailA > emailB) {
+    return 1;
   }
   return 0;
 }
