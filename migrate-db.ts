@@ -1,5 +1,4 @@
-import 'std/dotenv/load.ts';
-
+import 'std/dotenv/load';
 import Database, { sql } from '/lib/interfaces/database.ts';
 
 const migrationsDirectoryPath = `${Deno.cwd()}/db-migrations`;

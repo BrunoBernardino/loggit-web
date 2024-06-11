@@ -1,5 +1,4 @@
-import 'std/dotenv/load.ts';
-
+import 'std/dotenv/load';
 import { baseUrl, jsonToFormUrlEncoded } from '/lib/utils.ts';
 
 const STRIPE_API_KEY = Deno.env.get('STRIPE_API_KEY') || '';
