@@ -3,10 +3,10 @@ import Encryption from './encryption.ts';
 import LocalData, { StoredSession } from './local-data.ts';
 
 declare global {
-  interface Window {
-    app: App;
-    Swal: any;
-  }
+  // deno-lint-ignore no-var
+  var app: App;
+  // deno-lint-ignore no-var
+  var Swal: any;
 }
 
 export interface App {
@@ -38,7 +38,7 @@ export async function checkForValidSession() {
   const isUserLoggedIn = isLoggedIn();
 
   if (isUserLoggedIn) {
-    window.app.isLoggedIn = true;
+    globalThis.app.isLoggedIn = true;
     showValidSessionElements();
 
     const user = await getUser();
@@ -48,7 +48,7 @@ export async function checkForValidSession() {
 
       // Give people some time to logout or export
       setTimeout(() => {
-        window.location.href = '/pricing';
+        globalThis.location.href = '/pricing';
       }, 10000);
     }
 
@@ -57,7 +57,7 @@ export async function checkForValidSession() {
 }
 
 export function showNotification(message: string, type = 'success') {
-  const { Swal } = window;
+  const { Swal } = globalThis;
 
   const Toast = Swal.mixin({
     toast: true,
@@ -78,7 +78,7 @@ export function showNotification(message: string, type = 'success') {
 }
 
 export function doLogout() {
-  const { Swal } = window;
+  const { Swal } = globalThis;
 
   try {
     LocalData.clear();
@@ -89,7 +89,7 @@ export function doLogout() {
   } catch (error) {
     Swal.fire(
       'Something went wrong!',
-      `Uh oh! Something wrong happened: ${error && error.message}`,
+      `Uh oh! Something wrong happened: ${error && (error as Error).message}`,
       'error',
     );
   }
@@ -97,8 +97,8 @@ export function doLogout() {
   return false;
 }
 
-if (window.app && !window.app.doLogout) {
-  window.app.doLogout = doLogout;
+if (globalThis.app && !globalThis.app.doLogout) {
+  globalThis.app.doLogout = doLogout;
 }
 
 export function isLoggedIn() {
@@ -192,7 +192,7 @@ export function swapAccount(newEmail: string) {
 
       LocalData.set('session', newSession);
 
-      window.location.reload();
+      globalThis.location.reload();
     }
   } catch (_error) {
     // Do nothing
@@ -202,7 +202,7 @@ export function swapAccount(newEmail: string) {
 }
 
 export async function validateLogin(email: string, password: string) {
-  const { Swal } = window;
+  const { Swal } = globalThis;
 
   let existingSession: StoredSession | null = null;
 
@@ -244,7 +244,7 @@ export async function validateLogin(email: string, password: string) {
       throw new Error('Failed email/password combination.');
     }
 
-    window.app.hideLoading();
+    globalThis.app.hideLoading();
 
     const { value: code } = await Swal.fire({
       template: '#verification-code-modal',
@@ -265,7 +265,7 @@ export async function validateLogin(email: string, password: string) {
       },
     });
 
-    window.app.showLoading();
+    globalThis.app.showLoading();
 
     const verificationBody: { user_id: string; session_id: string; code: string } = {
       user_id: user.id,
@@ -387,7 +387,7 @@ export async function fetchEvents(month: string) {
 
     return events;
   } catch (error) {
-    const { Swal } = window;
+    const { Swal } = globalThis;
 
     Swal.fire({
       title: 'Uh-oh',
@@ -433,7 +433,7 @@ export async function saveEvent(event: Omit<Pick<Event, 'name' | 'date'>, 'id'> 
 
     return true;
   } catch (error) {
-    const { Swal } = window;
+    const { Swal } = globalThis;
 
     Swal.fire({
       title: 'Uh-oh',
@@ -462,7 +462,7 @@ export async function deleteEvent(eventId: string) {
 
     return true;
   } catch (error) {
-    const { Swal } = window;
+    const { Swal } = globalThis;
 
     Swal.fire({
       title: 'Uh-oh',
@@ -476,9 +476,9 @@ export async function deleteEvent(eventId: string) {
 }
 
 export async function deleteAllData() {
-  const { Swal } = window;
+  const { Swal } = globalThis;
   try {
-    window.app.showLoading();
+    globalThis.app.showLoading();
 
     const headers = commonRequestHeaders;
 
@@ -491,7 +491,7 @@ export async function deleteAllData() {
 
     await fetch('/api/data', { method: 'DELETE', headers, body: JSON.stringify(body) });
 
-    window.app.hideLoading();
+    globalThis.app.hideLoading();
 
     const { value: code } = await Swal.fire({
       template: '#verification-code-modal',
@@ -512,7 +512,7 @@ export async function deleteAllData() {
       },
     });
 
-    window.app.showLoading();
+    globalThis.app.showLoading();
 
     body.code = code;
 
@@ -520,7 +520,7 @@ export async function deleteAllData() {
 
     return true;
   } catch (error) {
-    const { Swal } = window;
+    const { Swal } = globalThis;
 
     Swal.fire({
       title: 'Uh-oh',
@@ -547,7 +547,7 @@ export async function exportAllData() {
 
     return { events };
   } catch (error) {
-    const { Swal } = window;
+    const { Swal } = globalThis;
 
     Swal.fire({
       title: 'Uh-oh',
@@ -594,7 +594,7 @@ export async function importData(replaceData: boolean, events: Event[]) {
 
     return true;
   } catch (error) {
-    const { Swal } = window;
+    const { Swal } = globalThis;
 
     Swal.fire({
       title: 'Uh-oh',

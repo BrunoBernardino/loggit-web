@@ -68,7 +68,7 @@ document.addEventListener('app-loaded', async () => {
 
       showNotification('Frequency changed successfully!');
     } catch (error) {
-      showNotification(error, 'error');
+      showNotification(error as string, 'error');
     }
 
     isUpdating = false;
@@ -278,7 +278,7 @@ document.addEventListener('app-loaded', async () => {
       isUpdating = false;
       window.app.hideLoading();
       changeEmailButton.textContent = 'Change email';
-      showNotification(error, 'error');
+      showNotification(error as string, 'error');
     }
   }
 
@@ -359,7 +359,7 @@ document.addEventListener('app-loaded', async () => {
       isUpdating = false;
       window.app.hideLoading();
       changePasswordButton.textContent = 'Change password / encryption key';
-      showNotification(error, 'error');
+      showNotification(error as string, 'error');
     }
   }
 
