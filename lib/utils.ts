@@ -16,8 +16,8 @@ export const defaultDescription = 'Simple and encrypted event management.';
 export const helpEmail = 'help@loggit.net';
 
 export const PORT = Deno.env.get('PORT') || 8000;
-export const STRIPE_MONTHLY_URL = 'https://buy.stripe.com/9AQbKp7fK6YN4uIbJ4';
-export const STRIPE_YEARLY_URL = 'https://buy.stripe.com/bIYbKpbw00Ap5yMbJ5';
+export const STRIPE_MONTHLY_URL = 'https://buy.stripe.com/00g9ChcA46YN1iw14E';
+export const STRIPE_YEARLY_URL = 'https://buy.stripe.com/cN2bKpdE8fvj5yMdRr';
 export const STRIPE_CUSTOMER_URL = 'https://billing.stripe.com/p/login/4gw15w3G9bDyfWU6oo';
 export const PAYPAL_CUSTOMER_URL = 'https://www.paypal.com';
 export const IS_UNSAFE_SELF_HOSTED = Boolean(Deno.env.get('IS_UNSAFE_SELF_HOSTED') || '');
