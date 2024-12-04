@@ -21,6 +21,8 @@ export const STRIPE_YEARLY_URL = 'https://buy.stripe.com/bIYbKpbw00Ap5yMbJ5';
 export const STRIPE_CUSTOMER_URL = 'https://billing.stripe.com/p/login/4gw15w3G9bDyfWU6oo';
 export const PAYPAL_CUSTOMER_URL = 'https://www.paypal.com';
 export const IS_UNSAFE_SELF_HOSTED = Boolean(Deno.env.get('IS_UNSAFE_SELF_HOSTED') || '');
+export const MONTHLY_PRICE = 4;
+export const YEARLY_PRICE = 40;
 
 export interface PageContentResult {
   htmlContent: string;
